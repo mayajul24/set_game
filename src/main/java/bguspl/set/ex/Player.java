@@ -87,9 +87,6 @@ public class Player implements Runnable {
 
         while (!terminate) {
             // TODO implement main player loop
-            Random random = new Random();
-            int slot = random.nextInt(11);
-            keyPressed(slot);
         }
         if (!human) try {
             aiThread.join();
@@ -108,6 +105,10 @@ public class Player implements Runnable {
             env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " starting.");
             while (!terminate) {
                 // TODO implement player key press simulator
+                Random random = new Random();
+                int slot = random.nextInt(11);
+                keyPressed(slot);
+
                 try {
                     synchronized (this) {
                         wait();
