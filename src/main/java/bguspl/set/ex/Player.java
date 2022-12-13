@@ -151,7 +151,7 @@ public class Player implements Runnable {
                 table.placeToken(id, slot);
 
                 if (tokens.size() == 3) {
-                    dealer.checkSet(this);
+                    dealer.checkMe(this);
                 }
             }
             else {

@@ -2,12 +2,10 @@ package bguspl.set.ex;
 
 import bguspl.set.Env;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.Random;
 
 /**
  * This class manages the dealer's threads and data
@@ -40,11 +38,14 @@ public class Dealer implements Runnable {
      */
     private long reshuffleTime = Long.MAX_VALUE;
 
+    private Queue<Player> playersQueue;
+
     public Dealer(Env env, Table table, Player[] players) {
         this.env = env;
         this.table = table;
         this.players = players;
         deck = IntStream.range(0, env.config.deckSize).boxed().collect(Collectors.toList());
+        playersQueue =  new LinkedList<Player>();
     }
 
     /**
@@ -192,5 +193,13 @@ public class Dealer implements Runnable {
         {
             player.penalty();
         }
+    }
+    public void checkMe(Player player){
+        playersQueue.add(player);
+        while(!playersQueue.isEmpty()){
+            Player currentPlayer = playersQueue.remove();
+            checkSet(currentPlayer);
+        }
+
     }
 }
