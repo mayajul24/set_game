@@ -2,6 +2,7 @@ package bguspl.set.ex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 
 import bguspl.set.Env;
@@ -86,6 +87,9 @@ public class Player implements Runnable {
 
         while (!terminate) {
             // TODO implement main player loop
+            Random random = new Random();
+            int slot = random.nextInt(11);
+            keyPressed(slot);
         }
         if (!human) try {
             aiThread.join();
