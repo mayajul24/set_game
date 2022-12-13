@@ -171,16 +171,26 @@ public class Dealer implements Runnable {
     {
         int[]cards = new int[3];
         int i=0;
-        //TODO:clear player's queue, delete tokens
+        //get player's cards and delete their tokens
         for(int token: player.getTokens()) {
             cards[i] = table.slotToCard[token];
+            table.removeToken(player.getId(),token);
             i++;
         }
+        //clear player's actions:
+        player.getTokens().clear();
+
         boolean isSet = env.util.testSet(cards);
-        //TODO: if set point the player, remove cards from table and place cards from deck and remove tokens from cards
+
         if(isSet)
         {
             removeSet(player.getTokens());
+            player.point();
+            placeCardsOnTable();
+        }
+        else
+        {
+            player.penalty();
         }
     }
 }

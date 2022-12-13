@@ -1,5 +1,6 @@
 package bguspl.set.ex;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -71,6 +72,7 @@ public class Player implements Runnable {
         this.table = table;
         this.id = id;
         this.human = human;
+        this.tokens = new ArrayList<Integer>();
     }
 
     /**
@@ -140,7 +142,7 @@ public class Player implements Runnable {
         if (tokens.size() < 3) {
 
             tokens.add(slot);
-            env.ui.placeCard(id, slot);
+            table.placeCard(id, slot);
             table.placeToken(id, slot);
 
             if (tokens.size() == 3) {
