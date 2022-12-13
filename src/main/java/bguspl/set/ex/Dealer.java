@@ -45,7 +45,7 @@ public class Dealer implements Runnable {
         this.table = table;
         this.players = players;
         deck = IntStream.range(0, env.config.deckSize).boxed().collect(Collectors.toList());
-        playersQueue =  new LinkedList<Player>();
+        playersQueue = new LinkedList<Player>();
     }
 
     /**
@@ -101,18 +101,15 @@ public class Dealer implements Runnable {
     private void removeCardsFromTable() {
         // TODO implement
     }
-    private void removeSet(List<Integer> slots)
-    {
-        for(int slot: slots)
-        {
+
+    private void removeSet(List<Integer> slots) {
+        for (int slot : slots) {
             table.removeCard(slot);
-            for(Player player: players)
-            {
-                List<Integer>tokens = player.getTokens();
-                if(tokens.contains(slot))
-                {
+            for (Player player : players) {
+                List<Integer> tokens = player.getTokens();
+                if (tokens.contains(slot)) {
                     tokens.remove(slot);
-                    table.removeToken(player.getId(),slot);
+                    table.removeToken(player.getId(), slot);
                 }
             }
         }
@@ -122,23 +119,19 @@ public class Dealer implements Runnable {
      * Check if any cards can be removed from the deck and placed on the table.
      */
     private void placeCardsOnTable() {
-        // TODO implement
-        Integer[]slotToCard = table.getSlotToCard();
-        for(int i=0;i<slotToCard.length;i++)
-        {
-            if(slotToCard[i]==null)
-            {
-                //TODO: randomCard
+        Integer[] slotToCard = table.getSlotToCard();
+        for (int i = 0; i < slotToCard.length; i++) {
+            if (slotToCard[i] == null) {
                 int randomCard = randomCard();
-                table.placeCard(randomCard,i);
+                table.placeCard(randomCard, i);
                 deck.remove(randomCard);
             }
         }
     }
-    public int randomCard()
-    {
+
+    public int randomCard() {
         Random random = new Random();
-        int randomCard = random.nextInt(deck.size()-1);
+        int randomCard = random.nextInt(deck.size() - 1);
         return randomCard;
     }
 
@@ -162,7 +155,20 @@ public class Dealer implements Runnable {
      * Returns all the cards from the table to the deck.
      */
     private void removeAllCardsFromTable() {
-        // TODO implement
+        for (int i = 0; i < 12; i++) {
+            int card = table.slotToCard[i];
+            table.removeCard(i);
+            deck.add(card);
+            for (Player player : players) {
+                List<Integer> tokens = player.getTokens();
+                if (tokens.contains(i)) {
+                    tokens.remove(i);
+                    table.removeToken(player.getId(), i);
+                }
+            }
+        }
+
+
     }
 
     /**
@@ -170,16 +176,38 @@ public class Dealer implements Runnable {
      */
     private void announceWinners() {
         // TODO implement
+        List<Integer> winnersList = new ArrayList<Integer>();
+        int maxScore = 0;
+        int winnerId = 0;
+        for (int i = 0; i < players.length; i++) {
+            int playerScore = players[i].getScore();
+            if (playerScore > maxScore) {
+                maxScore = playerScore;
+                winnerId = i;
+            }
+        }
+        winnersList.add(winnerId);
+
+        for (int i = 0; i < players.length; i++) {
+            int playerScore = players[i].getScore();
+            if (i != winnerId & playerScore == players[winnerId].getScore()) {
+                winnersList.add(i);
+            }
+        }
+        int[] winnersArray = new int[winnersList.size()];
+        for (int i = 0; i < winnersArray.length; i++) {
+            winnersArray[i] = winnersList.get(i);
+        }
+        env.ui.announceWinner(winnersArray);
     }
 
-    public void checkSet(Player player)
-    {
-        int[]cards = new int[3];
-        int i=0;
+    public void checkSet(Player player) {
+        int[] cards = new int[3];
+        int i = 0;
         //get player's cards and delete their tokens
-        for(int token: player.getTokens()) {
+        for (int token : player.getTokens()) {
             cards[i] = table.slotToCard[token];
-            table.removeToken(player.getId(),token);
+            table.removeToken(player.getId(), token);
             i++;
         }
         //clear player's actions:
@@ -187,20 +215,18 @@ public class Dealer implements Runnable {
 
         boolean isSet = env.util.testSet(cards);
 
-        if(isSet)
-        {
+        if (isSet) {
             removeSet(player.getTokens());
             player.point();
             placeCardsOnTable();
-        }
-        else
-        {
+        } else {
             player.penalty();
         }
     }
-    public void checkMe(Player player){
+
+    public void checkPlayer(Player player) {
         playersQueue.add(player);
-        while(!playersQueue.isEmpty()){
+        while (!playersQueue.isEmpty()) {
             Player currentPlayer = playersQueue.remove();
             checkSet(currentPlayer);
         }
