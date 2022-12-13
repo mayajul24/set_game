@@ -134,7 +134,7 @@ public class Player implements Runnable {
      * @param slot - the slot corresponding to the key pressed.
      */
     public void keyPressed(int slot) {
-        // TODO implement
+        // TODO: undo action if clicked twice
         try {
             while (table.countCards() < 12) {
 
@@ -145,61 +145,66 @@ public class Player implements Runnable {
         ;
 
         if (tokens.size() < 3) {
+            if (!tokens.contains(slot)) {
+                tokens.add(slot);
+                table.placeCard(id, slot);
+                table.placeToken(id, slot);
 
-            tokens.add(slot);
-            table.placeCard(id, slot);
-            table.placeToken(id, slot);
+                if (tokens.size() == 3) {
+                    dealer.checkSet(this);
+                }
+            }
+            else {
+                tokens.remove(slot);
+                table.removeCard(slot);
+                table.removeToken(id,slot);
+            }
+        }
+    }
 
-            if (tokens.size() == 3) {
-                dealer.checkSet(this);
+        /**
+         * Award a point to a player and perform other related actions.
+         *
+         * @post - the player's score is increased by 1.
+         * @post - the player's score is updated in the ui.
+         */
+        public void point () {
+            // TODO implement
+            score++;
+            env.ui.setScore(id, score);
+            try {
+                env.ui.setFreeze(id, 1000);
+                playerThread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            int ignored = table.countCards(); // this part is just for demonstration in the unit tests
+            env.ui.setScore(id, ++score);
+        }
+
+        /**
+         * Penalize a player and perform other related actions.
+         */
+        public void penalty () {
+            // TODO implement
+            try {
+                env.ui.setFreeze(id, 5000);
+                playerThread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
-    }
-
-    /**
-     * Award a point to a player and perform other related actions.
-     *
-     * @post - the player's score is increased by 1.
-     * @post - the player's score is updated in the ui.
-     */
-    public void point() {
-        // TODO implement
-        score++;
-        env.ui.setScore(id, score);
-        try {
-            env.ui.setFreeze(id, 1000);
-            playerThread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        public int getScore () {
+            return score;
         }
 
-        int ignored = table.countCards(); // this part is just for demonstration in the unit tests
-        env.ui.setScore(id, ++score);
-    }
+        public List<Integer> getTokens () {
+            return tokens;
+        }
 
-    /**
-     * Penalize a player and perform other related actions.
-     */
-    public void penalty() {
-        // TODO implement
-        try {
-            env.ui.setFreeze(id, 5000);
-            playerThread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        public int getId () {
+            return id;
         }
     }
-
-    public int getScore() {
-        return score;
-    }
-
-    public List<Integer> getTokens() {
-        return tokens;
-    }
-
-    public int getId() {
-        return id;
-    }
-}
