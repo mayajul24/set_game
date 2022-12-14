@@ -188,13 +188,15 @@ public class Player implements Runnable {
      */
     public void penalty() {
         // TODO implement
-        try {
-            env.ui.setFreeze(id,3000);
-            playerThread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+        env.ui.setFreeze(id,3000);
+//        try {
+//            env.ui.setFreeze(id,3000);
+//            playerThread.sleep(3000);
+//            env.ui.setFreeze(id,-1);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public int getScore() {
         return score;
