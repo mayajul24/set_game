@@ -221,6 +221,10 @@ public class Dealer implements Runnable {
             placeCardsOnTable();
         } else {
             player.penalty();
+            long timer = System.currentTimeMillis() + 5000;
+            while(System.currentTimeMillis()<=timer){
+                env.ui.setFreeze(player.id, timer -System.currentTimeMillis());
+            }
         }
     }
 

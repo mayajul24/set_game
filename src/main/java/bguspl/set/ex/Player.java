@@ -186,7 +186,6 @@ public class Player implements Runnable {
     public void penalty() {
         // TODO implement
         try {
-            env.ui.setFreeze(id, 5000);
             playerThread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
