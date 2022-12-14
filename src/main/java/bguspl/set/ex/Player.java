@@ -87,6 +87,8 @@ public class Player implements Runnable {
 
         while (!terminate) {
             // TODO implement main player loop
+
+
         }
         if (!human) try {
             aiThread.join();
@@ -134,9 +136,8 @@ public class Player implements Runnable {
      * @param slot - the slot corresponding to the key pressed.
      */
     public void keyPressed(int slot) {
-        // TODO: undo action if clicked twice
         try {
-            while (table.countCards() < 12) {
+            while (table.countCards() < 12 & dealer.getDeck().size()!=0) {
 
                 this.wait();
             }
@@ -152,11 +153,13 @@ public class Player implements Runnable {
                 if (tokens.size() == 3) {
                     dealer.checkPlayer(this);
                 }
-            } else {
-                tokens.remove(slot);
+            }
+            else {
+                tokens.remove(tokens.indexOf(slot));
                 table.removeToken(id, slot);
             }
         }
+
     }
 
     /**
@@ -186,7 +189,8 @@ public class Player implements Runnable {
     public void penalty() {
         // TODO implement
         try {
-            playerThread.sleep(5000);
+            env.ui.setFreeze(id,3000);
+            playerThread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

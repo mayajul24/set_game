@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+
 /**
  * This class manages the dealer's threads and data
  */
@@ -54,7 +55,12 @@ public class Dealer implements Runnable {
     @Override
     public void run() {
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " starting.");
+        for (Player player : players) {
+            Thread playerThread = new Thread(player);
+            playerThread.start();
+        }
         while (!shouldFinish()) {
+            Collections.shuffle(deck);
             placeCardsOnTable();
             timerLoop();
             updateTimerDisplay(false);
@@ -122,17 +128,10 @@ public class Dealer implements Runnable {
         Integer[] slotToCard = table.getSlotToCard();
         for (int i = 0; i < slotToCard.length; i++) {
             if (slotToCard[i] == null) {
-                int randomCard = randomCard();
-                table.placeCard(randomCard, i);
-                deck.remove(randomCard);
+                int card = deck.get(0);
+                table.placeCard(deck.remove(card), i);
             }
         }
-    }
-
-    public int randomCard() {
-        Random random = new Random();
-        int randomCard = random.nextInt(deck.size() - 1);
-        return randomCard;
     }
 
     /**
@@ -140,6 +139,7 @@ public class Dealer implements Runnable {
      */
     private void sleepUntilWokenOrTimeout() {
         // TODO implement
+
     }
 
     /**
@@ -147,7 +147,7 @@ public class Dealer implements Runnable {
      */
     private void updateTimerDisplay(boolean reset) {
         long currentTime = System.currentTimeMillis();
-            env.ui.setCountdown(reshuffleTime-currentTime+1000,false);
+        env.ui.setCountdown(reshuffleTime - currentTime + 1000, false);
 
     }
 
@@ -162,7 +162,7 @@ public class Dealer implements Runnable {
             for (Player player : players) {
                 List<Integer> tokens = player.getTokens();
                 if (tokens.contains(i)) {
-                    tokens.remove(i);
+                    tokens.remove(tokens.indexOf(i));
                     table.removeToken(player.getId(), i);
                 }
             }
@@ -207,24 +207,19 @@ public class Dealer implements Runnable {
         //get player's cards and delete their tokens
         for (int token : player.getTokens()) {
             cards[i] = table.slotToCard[token];
-            table.removeToken(player.getId(), token);
             i++;
         }
-        //clear player's actions:
-        player.getTokens().clear();
-
         boolean isSet = env.util.testSet(cards);
 
         if (isSet) {
+            //clear player's actions:
+            player.getTokens().clear();
             removeSet(player.getTokens());
             player.point();
             placeCardsOnTable();
         } else {
             player.penalty();
-            long timer = System.currentTimeMillis() + 5000;
-            while(System.currentTimeMillis()<=timer){
-                env.ui.setFreeze(player.id, timer -System.currentTimeMillis());
-            }
+
         }
     }
 
@@ -235,5 +230,9 @@ public class Dealer implements Runnable {
             checkSet(currentPlayer);
         }
 
+    }
+
+    public List<Integer> getDeck() {
+        return deck;
     }
 }
