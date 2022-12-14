@@ -58,6 +58,8 @@ public class Player implements Runnable {
 
     private List<Integer> tokens;
 
+    private int numOfTokens;
+
     /**
      * The class constructor.
      *
@@ -74,6 +76,7 @@ public class Player implements Runnable {
         this.id = id;
         this.human = human;
         this.tokens = new ArrayList<Integer>();
+        this.numOfTokens = 0;
     }
 
     /**
@@ -86,8 +89,7 @@ public class Player implements Runnable {
         if (!human) createArtificialIntelligence();
 
         while (!terminate) {
-            // TODO implement main player loop
-
+            //TODO: check tokens list, add tokens to the table and check if we reached 3 tokens notify dealer and send him/her tokens
 
         }
         if (!human) try {
@@ -137,29 +139,21 @@ public class Player implements Runnable {
      */
     public void keyPressed(int slot) {
         try {
-            while (table.countCards() < 12 & dealer.getDeck().size()!=0) {
-
+            while (table.countCards() < 12 & dealer.getDeck().size() != 0) {
                 this.wait();
             }
-        } catch (InterruptedException ignore) {
         }
-        ;
-
-        if (tokens.size() < 3) {
-            if (!tokens.contains(slot)) {
-                tokens.add(slot);
-                table.placeToken(id, slot);
-
-                if (tokens.size() == 3) {
-                    dealer.checkPlayer(this);
-                }
-            }
-            else {
-                tokens.remove(tokens.indexOf(slot));
-                table.removeToken(id, slot);
-            }
+        catch (InterruptedException ignore) {
         }
 
+        if (!tokens.contains(slot)) {
+            tokens.remove(tokens.indexOf(slot));
+            numOfTokens--;
+        }
+        else if (tokens.size() < 3) {
+            tokens.add(slot);
+            numOfTokens++;
+        }
     }
 
     /**
