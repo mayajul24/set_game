@@ -181,8 +181,12 @@ public class Player implements Runnable {
      * Penalize a player and perform other related actions.
      */
     public void penalty() {
-        // TODO implement
-        env.ui.setFreeze(id, 3000);
+        // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
+        long timer = System.currentTimeMillis() + 1000;
+        while(System.currentTimeMillis()<timer) {
+            env.ui.setFreeze(id, env.config.turnTimeoutMillis);
+        }
+        env.ui.setFreeze(id,-1000);
 //        try {
 //            env.ui.setFreeze(id,3000);
 //            playerThread.sleep(3000);
