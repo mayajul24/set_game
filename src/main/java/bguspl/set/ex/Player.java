@@ -1,8 +1,6 @@
 package bguspl.set.ex;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Level;
 
 import bguspl.set.Env;
@@ -56,9 +54,8 @@ public class Player implements Runnable {
     private int score;
     private Dealer dealer;
 
-    private List<Integer> tokens;
-
-    private int numOfTokens;
+    private Queue<Integer> keyPressesTokens;
+    private List<Integer> potentialSet;
 
     /**
      * The class constructor.
@@ -75,8 +72,8 @@ public class Player implements Runnable {
         this.table = table;
         this.id = id;
         this.human = human;
-        this.tokens = new ArrayList<Integer>();
-        this.numOfTokens = 0;
+        this.keyPressesTokens = new LinkedList<Integer>();
+        this.potentialSet = new ArrayList<Integer>();
     }
 
     /**
@@ -90,7 +87,19 @@ public class Player implements Runnable {
 
         while (!terminate) {
             //TODO: check tokens list, add tokens to the table and check if we reached 3 tokens notify dealer and send him/her tokens
-
+            if (keyPressesTokens.size() > 0) {
+                int token = keyPressesTokens.remove();
+                if (potentialSet.contains(token)) {
+                    potentialSet.remove(potentialSet.indexOf(token));
+                    table.removeToken(id, token);
+                } else {
+                    potentialSet.add(table.getSlotToCard()[token]);
+                    table.placeToken(id,token);
+                    if (potentialSet.size() == 3) {
+                        dealer.checkPlayer(this);
+                    }
+                }
+            }
         }
         if (!human) try {
             aiThread.join();
@@ -142,18 +151,9 @@ public class Player implements Runnable {
             while (table.countCards() < 12 & dealer.getDeck().size() != 0) {
                 this.wait();
             }
+        } catch (InterruptedException ignore) {
         }
-        catch (InterruptedException ignore) {
-        }
-
-        if (!tokens.contains(slot)) {
-            tokens.remove(tokens.indexOf(slot));
-            numOfTokens--;
-        }
-        else if (tokens.size() < 3) {
-            tokens.add(slot);
-            numOfTokens++;
-        }
+        keyPressesTokens.add(slot);
     }
 
     /**
@@ -183,10 +183,10 @@ public class Player implements Runnable {
     public void penalty() {
         // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
         long timer = System.currentTimeMillis() + 1000;
-        while(System.currentTimeMillis()<timer) {
+        while (System.currentTimeMillis() < timer) {
             env.ui.setFreeze(id, env.config.turnTimeoutMillis);
         }
-        env.ui.setFreeze(id,-1000);
+        env.ui.setFreeze(id, -1000);
 //        try {
 //            env.ui.setFreeze(id,3000);
 //            playerThread.sleep(3000);
@@ -201,11 +201,15 @@ public class Player implements Runnable {
         return score;
     }
 
-    public List<Integer> getTokens() {
-        return tokens;
+    public Queue<Integer> getKeyPressesTokens() {
+        return keyPressesTokens;
     }
 
     public int getId() {
         return id;
+    }
+
+    public List<Integer> getPotentialSet() {
+        return potentialSet;
     }
 }

@@ -112,7 +112,7 @@ public class Dealer implements Runnable {
         for (int slot : slots) {
             table.removeCard(slot);
             for (Player player : players) {
-                List<Integer> tokens = player.getTokens();
+                List<Integer> tokens = player.getPotentialSet();
                 if (tokens.contains(slot)) {
                     tokens.remove(slot);
                     table.removeToken(player.getId(), slot);
@@ -160,7 +160,7 @@ public class Dealer implements Runnable {
             table.removeCard(i);
             deck.add(card);
             for (Player player : players) {
-                List<Integer> tokens = player.getTokens();
+                List<Integer> tokens = player.getPotentialSet();
                 if (tokens.contains(i)) {
                     tokens.remove(tokens.indexOf(i));
                     table.removeToken(player.getId(), i);
@@ -203,16 +203,16 @@ public class Dealer implements Runnable {
         int[] cards = new int[3];
         int i = 0;
         //get player's cards and delete their tokens
-        for (int token : player.getTokens()) {
-            cards[i] = table.slotToCard[token];
+        for (int card : player.getPotentialSet()) {
+            cards[i] = card;
             i++;
         }
         boolean isSet = env.util.testSet(cards);
 
         if (isSet) {
             //clear player's actions:
-            player.getTokens().clear();
-            removeSet(player.getTokens());
+            player.getPotentialSet().clear();
+            removeSet(player.getPotentialSet());
             player.point();
             placeCardsOnTable();
         } else {
