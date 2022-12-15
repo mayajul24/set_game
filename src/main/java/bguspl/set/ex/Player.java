@@ -92,9 +92,9 @@ public class Player implements Runnable {
                 if (potentialSet.contains(token)) {
                     potentialSet.remove(potentialSet.indexOf(token));
                     table.removeToken(id, token);
-                } else {
+                } else if (potentialSet.size() < 3) {
                     potentialSet.add(table.getSlotToCard()[token]);
-                    table.placeToken(id,token);
+                    table.placeToken(id, token);
                     if (potentialSet.size() == 3) {
                         dealer.checkPlayer(this);
                     }
