@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 import bguspl.set.Env;
+import org.omg.Messaging.SyncScopeHelper;
 
 /**
  * This class manages the players' threads and data
@@ -89,11 +90,13 @@ public class Player implements Runnable {
             //TODO: check tokens list, add tokens to the table and check if we reached 3 tokens notify dealer and send him/her tokens
             if (keyPressesTokens.size() > 0) {
                 int token = keyPressesTokens.remove();
-                if (potentialSet.contains(token)) {
-                    potentialSet.remove(potentialSet.indexOf(token));
+                int card = table.getSlotToCard()[token];
+                if (potentialSet.contains(card)) {
+                    potentialSet.remove(potentialSet.indexOf(card));
                     table.removeToken(id, token);
                 } else if (potentialSet.size() < 3) {
                     potentialSet.add(table.getSlotToCard()[token]);
+                    System.out.println("settttt "+ potentialSet.toString());
                     table.placeToken(id, token);
                     if (potentialSet.size() == 3) {
                         dealer.checkPlayer(this);
@@ -154,6 +157,7 @@ public class Player implements Runnable {
         } catch (InterruptedException ignore) {
         }
         keyPressesTokens.add(slot);
+        System.out.println("queue: "+keyPressesTokens);
     }
 
     /**
