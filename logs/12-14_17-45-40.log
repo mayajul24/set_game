@@ -1,0 +1,36 @@
+[2022-12-14 17:45:40] [INFO   ] cannot read configuration file config.properties trying from resources.
+[2022-12-14 17:45:40] [INFO   ] configuration file was loaded from resources directory.
+[2022-12-14 17:45:40] [INFO   ] Thread dealer starting.
+[2022-12-14 17:45:40] [INFO   ] Thread Thread-4starting.
+[2022-12-14 17:45:40] [INFO   ] Thread Thread-3starting.
+[2022-12-14 17:45:41] [SEVERE ] placing card 41 in slot 0
+[2022-12-14 17:45:41] [SEVERE ] placing card 57 in slot 1
+[2022-12-14 17:45:41] [SEVERE ] placing card 52 in slot 2
+[2022-12-14 17:45:41] [SEVERE ] placing card 16 in slot 3
+[2022-12-14 17:45:41] [SEVERE ] placing card 8 in slot 4
+[2022-12-14 17:45:41] [SEVERE ] placing card 59 in slot 5
+[2022-12-14 17:45:41] [SEVERE ] placing card 42 in slot 6
+[2022-12-14 17:45:41] [SEVERE ] placing card 1 in slot 7
+[2022-12-14 17:45:41] [SEVERE ] placing card 73 in slot 8
+[2022-12-14 17:45:42] [SEVERE ] placing card 17 in slot 9
+[2022-12-14 17:45:42] [SEVERE ] placing card 9 in slot 10
+[2022-12-14 17:45:42] [SEVERE ] placing card 21 in slot 11
+[2022-12-14 17:45:43] [SEVERE ] Key 65 was pressed by player 0
+[2022-12-14 17:45:43] [SEVERE ] player 0 placing token on slot 4
+[2022-12-14 17:45:45] [SEVERE ] Key 75 was pressed by player 1
+[2022-12-14 17:45:45] [SEVERE ] player 1 placing token on slot 5
+[2022-12-14 17:45:47] [SEVERE ] Key 83 was pressed by player 0
+[2022-12-14 17:45:47] [SEVERE ] player 0 placing token on slot 5
+[2022-12-14 17:45:48] [SEVERE ] Key 76 was pressed by player 1
+[2022-12-14 17:45:48] [SEVERE ] player 1 placing token on slot 6
+[2022-12-14 17:45:49] [SEVERE ] Key 90 was pressed by player 0
+[2022-12-14 17:45:49] [SEVERE ] player 0 placing token on slot 8
+[2022-12-14 17:45:49] [SEVERE ] setting player 0 freeze to 3000
+[2022-12-14 17:45:53] [SEVERE ] Key 80 was pressed by player 1
+[2022-12-14 17:45:53] [SEVERE ] player 1 placing token on slot 3
+[2022-12-14 17:45:53] [SEVERE ] setting player 1 freeze to 3000
+[2022-12-14 17:45:56] [SEVERE ] Key 76 was pressed by player 1
+[2022-12-14 17:45:56] [SEVERE ] Key 65 was pressed by player 0
+[2022-12-14 17:45:56] [SEVERE ] Key 44 was pressed by player 1
+[2022-12-14 17:45:58] [SEVERE ] Key 59 was pressed by player 1
+[2022-12-14 17:46:00] [SEVERE ] Key 76 was pressed by player 1
