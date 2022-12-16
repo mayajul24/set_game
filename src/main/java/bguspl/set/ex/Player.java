@@ -99,7 +99,6 @@ public class Player implements Runnable {
                         table.removeToken(id, token);
                     } else if (potentialSet.size() < 3) {
                         potentialSet.add(card);
-                        System.out.println("settttt "+ potentialSet.toString());
                         table.placeToken(id, token);
                         if (potentialSet.size() == 3) {
                             dealer.checkPlayer(this);
@@ -161,9 +160,8 @@ public class Player implements Runnable {
         } catch (InterruptedException ignore) {
         }
         keyPressesTokens.add(slot);
-        System.out.println("queue: "+keyPressesTokens);
     }
-
+//tttttt
     /**
      * Award a point to a player and perform other related actions.
      *
