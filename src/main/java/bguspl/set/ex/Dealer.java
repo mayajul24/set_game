@@ -112,10 +112,9 @@ public class Dealer implements Runnable {
         // TODO implement
     }
 
-    private void removeSet(List<Integer> cards) {
-        Iterator<Integer> it = cards.iterator();
-        while (it.hasNext()) {
-            int card = it.next();
+    private  void removeSet(List<Integer> cards) {
+        for(int i = 0; i<3; i++){
+            int card = cards.get(0);
             for (Player player : players) {
                 List<Integer> playerCards = player.getPotentialSet();
                 if (playerCards.contains(card)) {
@@ -153,9 +152,13 @@ public class Dealer implements Runnable {
      * Reset and/or update the countdown and the countdown display.
      */
     private void updateTimerDisplay(boolean reset) {
-        long currentTime = System.currentTimeMillis();
-        env.ui.setCountdown(reshuffleTime - currentTime + 1000, false);
-
+        if(reset){
+            reshuffleTime = 60000 + System.currentTimeMillis();
+        }
+        else{
+            long currentTime = System.currentTimeMillis();
+            env.ui.setCountdown(reshuffleTime - currentTime + 1000, false);
+        }
     }
 
     /**
@@ -221,6 +224,7 @@ public class Dealer implements Runnable {
             removeSet(player.getPotentialSet());
             player.point();
             placeCardsOnTable();
+            updateTimerDisplay(true);
         } else {
             player.penalty();
 

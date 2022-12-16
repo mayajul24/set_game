@@ -71,7 +71,7 @@ public class Table {
      *
      * @return - the number of cards on the table.
      */
-    public int countCards() {
+    public synchronized int countCards() {
         int cards = 0;
         for (Integer card : slotToCard)
             if (card != null)
@@ -86,7 +86,7 @@ public class Table {
      *
      * @post - the card placed is on the table, in the assigned slot.
      */
-    public void placeCard(int card, int slot) {
+    public synchronized void placeCard(int card, int slot) {
         try {
             Thread.sleep(env.config.tableDelayMillis);
         } catch (InterruptedException ignored) {}
@@ -101,7 +101,7 @@ public class Table {
      * Removes a card from a grid slot on the table.
      * @param slot - the slot from which to remove the card.
      */
-    public void removeCard(int slot) {
+    public synchronized void removeCard(int slot) {
         try {
             Thread.sleep(env.config.tableDelayMillis);
         } catch (InterruptedException ignored) {}

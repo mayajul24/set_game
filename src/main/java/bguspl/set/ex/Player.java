@@ -59,6 +59,7 @@ public class Player implements Runnable {
     private List<Integer> potentialSet;
 
     private Object yossi = new Object();
+
     /**
      * The class constructor.
      *
@@ -93,18 +94,17 @@ public class Player implements Runnable {
                 int token = keyPressesTokens.remove();
                 int card = table.getSlotToCard()[token];
 
-                synchronized (potentialSet) {
-                    if (potentialSet.contains(card)) {
-                        potentialSet.remove(potentialSet.indexOf(card));
-                        table.removeToken(id, token);
-                    } else if (potentialSet.size() < 3) {
-                        potentialSet.add(card);
-                        table.placeToken(id, token);
-                        if (potentialSet.size() == 3) {
-                            dealer.checkPlayer(this);
-                        }
+                if (getPotentialSet().contains(card)) {
+                    getPotentialSet().remove(potentialSet.indexOf(card));
+                    table.removeToken(id, token);
+                } else if (getPotentialSet().size() < 3) {
+                    getPotentialSet().add(card);
+                    table.placeToken(id, token);
+                    if (getPotentialSet().size() == 3) {
+                        dealer.checkPlayer(this);
                     }
                 }
+
             }
         }
         if (!human) try {
@@ -154,14 +154,16 @@ public class Player implements Runnable {
      */
     public void keyPressed(int slot) {
         try {
-            while (table.countCards() < 12 & dealer.getDeck().size() != 0) {
+            while (table.countCards() < 12 & dealer.getDeck().size() != 0 ) {
                 this.wait();
             }
         } catch (InterruptedException ignore) {
         }
-        keyPressesTokens.add(slot);
+            keyPressesTokens.add(slot);
+
     }
 //tttttt
+
     /**
      * Award a point to a player and perform other related actions.
      *
@@ -187,19 +189,20 @@ public class Player implements Runnable {
      */
     public void penalty() {
         // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
-        long timer = System.currentTimeMillis() + 1000;
-        while (System.currentTimeMillis() < timer) {
-            env.ui.setFreeze(id, env.config.turnTimeoutMillis);
+
+        try {
+
+            long timer = System.currentTimeMillis() + 4000;
+            while (System.currentTimeMillis() < timer) {
+                env.ui.setFreeze(id,timer-System.currentTimeMillis());
+            }
+            env.ui.setFreeze(id, -1000);
+            playerThread.sleep(3000);
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        env.ui.setFreeze(id, -1000);
-//        try {
-//            env.ui.setFreeze(id,3000);
-//            playerThread.sleep(3000);
-//            env.ui.setFreeze(id,-1);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
+
     }
 
     public int getScore() {
@@ -214,7 +217,7 @@ public class Player implements Runnable {
         return id;
     }
 
-    public List<Integer> getPotentialSet() {
+    public synchronized List<Integer> getPotentialSet() {
         return potentialSet;
     }
 }
