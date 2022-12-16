@@ -108,14 +108,13 @@ public class Dealer implements Runnable {
         // TODO implement
     }
 
-    private void removeSet(List<Integer> slots) {
-        for (int slot : slots) {
-            table.removeCard(slot);
+    private void removeSet(List<Integer> cards) {
+        for (int card : cards) {
+            table.removeCard(table.cardToSlot[card]);
             for (Player player : players) {
-                List<Integer> tokens = player.getPotentialSet();
-                if (tokens.contains(slot)) {
-                    tokens.remove(slot);
-                    table.removeToken(player.getId(), slot);
+                if (cards.contains(table.cardToSlot[card])) {
+                    cards.remove(card);
+                    table.removeToken(player.getId(), table.cardToSlot[card]);
                 }
             }
         }
