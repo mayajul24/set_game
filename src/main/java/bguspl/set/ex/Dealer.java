@@ -222,12 +222,11 @@ public class Dealer implements Runnable {
         if (isSet) {
             //clear player's actions:
             removeSet(player.getPotentialSet());
-            player.point();
+            player.setFrozenState(1);
             placeCardsOnTable();
             updateTimerDisplay(true);
         } else {
-            player.penalty();
-
+            player.setFrozenState(3);
         }
     }
 

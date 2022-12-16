@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import bguspl.set.Env;
 import org.omg.Messaging.SyncScopeHelper;
 
+
 /**
  * This class manages the players' threads and data
  *
@@ -58,7 +59,7 @@ public class Player implements Runnable {
     private Queue<Integer> keyPressesTokens;
     private List<Integer> potentialSet;
 
-    private Object yossi = new Object();
+    private int frozenState;
 
     /**
      * The class constructor.
@@ -77,6 +78,7 @@ public class Player implements Runnable {
         this.human = human;
         this.keyPressesTokens = new LinkedList<Integer>();
         this.potentialSet = new ArrayList<Integer>();
+        this.frozenState = 0;
     }
 
     /**
@@ -90,6 +92,19 @@ public class Player implements Runnable {
 
         while (!terminate) {
             //TODO: check tokens list, add tokens to the table and check if we reached 3 tokens notify dealer and send him/her tokens
+            //check if player is frozen:
+            if(frozenState == 1){
+                point();
+                frozenState = 0;
+            }
+
+            if(frozenState == 3){
+                penalty();
+                frozenState = 0;
+            }
+
+
+
             if (keyPressesTokens.size() > 0) {
                 int token = keyPressesTokens.remove();
                 int card = table.getSlotToCard()[token];
@@ -153,16 +168,16 @@ public class Player implements Runnable {
      * @param slot - the slot corresponding to the key pressed.
      */
     public void keyPressed(int slot) {
-        try {
-            while (table.countCards() < 12 & dealer.getDeck().size() != 0 ) {
-                this.wait();
-            }
-        } catch (InterruptedException ignore) {
-        }
-            keyPressesTokens.add(slot);
+//        try {
+//            while (table.countCards() < 12 & dealer.getDeck().size() != 0 ) {
+//                this.wait();
+//            }
+//        } catch (InterruptedException ignore) {
+//        }
 
+            keyPressesTokens.add(slot);
     }
-//tttttt
+
 
     /**
      * Award a point to a player and perform other related actions.
@@ -172,13 +187,19 @@ public class Player implements Runnable {
      */
     public void point() {
         // TODO implement
-
         try {
-            env.ui.setFreeze(id, 1000);
+
+            long timer = System.currentTimeMillis() + 2000;
+            while (System.currentTimeMillis() < timer) {
+                env.ui.setFreeze(id,timer-System.currentTimeMillis());
+            }
+            env.ui.setFreeze(id, -1000);
             playerThread.sleep(1000);
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
 
         int ignored = table.countCards(); // this part is just for demonstration in the unit tests
         env.ui.setScore(id, ++score);
@@ -202,7 +223,6 @@ public class Player implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 
     public int getScore() {
@@ -216,8 +236,10 @@ public class Player implements Runnable {
     public int getId() {
         return id;
     }
-
     public synchronized List<Integer> getPotentialSet() {
         return potentialSet;
+    }
+    public void setFrozenState(int i){
+        this.frozenState = i;
     }
 }
