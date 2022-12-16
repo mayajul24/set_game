@@ -79,6 +79,10 @@ public class Dealer implements Runnable {
         while (!terminate && System.currentTimeMillis() < reshuffleTime) {
             sleepUntilWokenOrTimeout();
             updateTimerDisplay(false);
+            while (!playersQueue.isEmpty()) {
+                Player currentPlayer = playersQueue.remove();
+                checkSet(currentPlayer);
+            }
             removeCardsFromTable();
             placeCardsOnTable();
         }
@@ -109,14 +113,18 @@ public class Dealer implements Runnable {
     }
 
     private void removeSet(List<Integer> cards) {
-        for (int card : cards) {
-            table.removeCard(table.cardToSlot[card]);
+        Iterator<Integer> it = cards.iterator();
+        while (it.hasNext()) {
+            int card = it.next();
             for (Player player : players) {
-                if (cards.contains(table.cardToSlot[card])) {
-                    cards.remove(card);
+                List<Integer> playerCards = player.getPotentialSet();
+                if (playerCards.contains(card)) {
+                    playerCards.remove(playerCards.indexOf(card));
+                    System.out.print("aaaaaaa "+table.cardToSlot[card]);
                     table.removeToken(player.getId(), table.cardToSlot[card]);
                 }
             }
+            table.removeCard(table.cardToSlot[card]);
         }
     }
 
@@ -210,7 +218,6 @@ public class Dealer implements Runnable {
 
         if (isSet) {
             //clear player's actions:
-            player.getPotentialSet().clear();
             removeSet(player.getPotentialSet());
             player.point();
             placeCardsOnTable();
@@ -222,10 +229,6 @@ public class Dealer implements Runnable {
 
     public void checkPlayer(Player player) {
         playersQueue.add(player);
-        while (!playersQueue.isEmpty()) {
-            Player currentPlayer = playersQueue.remove();
-            checkSet(currentPlayer);
-        }
 
     }
 

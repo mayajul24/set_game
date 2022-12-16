@@ -58,6 +58,7 @@ public class Player implements Runnable {
     private Queue<Integer> keyPressesTokens;
     private List<Integer> potentialSet;
 
+    private Object yossi = new Object();
     /**
      * The class constructor.
      *
@@ -91,15 +92,18 @@ public class Player implements Runnable {
             if (keyPressesTokens.size() > 0) {
                 int token = keyPressesTokens.remove();
                 int card = table.getSlotToCard()[token];
-                if (potentialSet.contains(card)) {
-                    potentialSet.remove(potentialSet.indexOf(card));
-                    table.removeToken(id, token);
-                } else if (potentialSet.size() < 3) {
-                    potentialSet.add(table.getSlotToCard()[token]);
-                    System.out.println("settttt "+ potentialSet.toString());
-                    table.placeToken(id, token);
-                    if (potentialSet.size() == 3) {
-                        dealer.checkPlayer(this);
+
+                synchronized (potentialSet) {
+                    if (potentialSet.contains(card)) {
+                        potentialSet.remove(potentialSet.indexOf(card));
+                        table.removeToken(id, token);
+                    } else if (potentialSet.size() < 3) {
+                        potentialSet.add(card);
+                        System.out.println("settttt "+ potentialSet.toString());
+                        table.placeToken(id, token);
+                        if (potentialSet.size() == 3) {
+                            dealer.checkPlayer(this);
+                        }
                     }
                 }
             }
@@ -168,8 +172,7 @@ public class Player implements Runnable {
      */
     public void point() {
         // TODO implement
-        score++;
-        env.ui.setScore(id, score);
+
         try {
             env.ui.setFreeze(id, 1000);
             playerThread.sleep(1000);
