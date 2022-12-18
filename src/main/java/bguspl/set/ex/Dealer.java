@@ -112,8 +112,8 @@ public class Dealer implements Runnable {
         // TODO implement
     }
 
-    private  void removeSet(List<Integer> cards) {
-        for(int i = 0; i<3; i++){
+    private void removeSet(List<Integer> cards) {
+        for (int i = 0; i < 3; i++) {
             int card = cards.get(0);
             for (Player player : players) {
                 List<Integer> playerCards = player.getPotentialSet();
@@ -132,9 +132,11 @@ public class Dealer implements Runnable {
      */
     private void placeCardsOnTable() {
         Integer[] slotToCard = table.getSlotToCard();
-        for (int i = 0; i < slotToCard.length-1; i++) {
+        for (int i = 0; i < slotToCard.length; i++) {
             if (slotToCard[i] == null) {
-                table.placeCard(deck.remove(0), i);
+                if (deck.size() != 0) {
+                    table.placeCard(deck.remove(0), i);
+                }
             }
         }
     }
@@ -151,10 +153,9 @@ public class Dealer implements Runnable {
      * Reset and/or update the countdown and the countdown display.
      */
     private void updateTimerDisplay(boolean reset) {
-        if(reset){
+        if (reset) {
             reshuffleTime = 60000 + System.currentTimeMillis();
-        }
-        else{
+        } else {
             long currentTime = System.currentTimeMillis();
             env.ui.setCountdown(reshuffleTime - currentTime + 1000, false);
         }
@@ -165,76 +166,79 @@ public class Dealer implements Runnable {
      */
     private void removeAllCardsFromTable() {
         for (int i = 0; i < 12; i++) {
-            int card = table.slotToCard[i];
-            table.removeCard(i);
-            deck.add(card);
-            for (Player player : players) {
-                List<Integer> tokens = player.getPotentialSet();
-                if (tokens.contains(i)) {
-                    tokens.remove(tokens.indexOf(i));
-                    table.removeToken(player.getId(), i);
+            if (table.slotToCard[i] != null) {
+                int card = table.slotToCard[i];
+                table.removeCard(i);
+                deck.add(card);
+                for (Player player : players) {
+                    List<Integer> tokens = player.getPotentialSet();
+                    if (tokens.contains(i)) {
+                        tokens.remove(tokens.indexOf(i));
+                        table.removeToken(player.getId(), i);
+                        player.getPotentialSet().remove(player.getPotentialSet().indexOf(table.slotToCard[i]));
+                    }
                 }
             }
         }
     }
 
-    /**
-     * Check who is/are the winner/s and displays them.
-     */
-    private void announceWinners() {
-        // TODO implement
-        List<Integer> winnersList = new ArrayList<Integer>();
-        int maxScore = 0;
-        int winnerId = 0;
-        for (int i = 0; i < players.length; i++) {
-            int playerScore = players[i].getScore();
-            if (playerScore > maxScore) {
-                maxScore = playerScore;
-                winnerId = i;
+        /**
+         * Check who is/are the winner/s and displays them.
+         */
+        private void announceWinners () {
+            // TODO implement
+            List<Integer> winnersList = new ArrayList<Integer>();
+            int maxScore = 0;
+            int winnerId = 0;
+            for (int i = 0; i < players.length; i++) {
+                int playerScore = players[i].getScore();
+                if (playerScore > maxScore) {
+                    maxScore = playerScore;
+                    winnerId = i;
+                }
+            }
+            winnersList.add(winnerId);
+
+            for (int i = 0; i < players.length; i++) {
+                int playerScore = players[i].getScore();
+                if (i != winnerId & playerScore == players[winnerId].getScore()) {
+                    winnersList.add(i);
+                }
+            }
+            int[] winnersArray = new int[winnersList.size()];
+            for (int i = 0; i < winnersArray.length; i++) {
+                winnersArray[i] = winnersList.get(i);
+            }
+            env.ui.announceWinner(winnersArray);
+        }
+
+        public void checkSet (Player player){
+            int[] cards = new int[3];
+            int i = 0;
+            //get player's cards and delete their tokens
+            for (int card : player.getPotentialSet()) {
+                cards[i] = card;
+                i++;
+            }
+            boolean isSet = env.util.testSet(cards);
+
+            if (isSet) {
+                //clear player's actions:
+                removeSet(player.getPotentialSet());
+                player.setFrozenState(1);
+                placeCardsOnTable();
+                updateTimerDisplay(true);
+            } else {
+                player.setFrozenState(3);
             }
         }
-        winnersList.add(winnerId);
 
-        for (int i = 0; i < players.length; i++) {
-            int playerScore = players[i].getScore();
-            if (i != winnerId & playerScore == players[winnerId].getScore()) {
-                winnersList.add(i);
-            }
-        }
-        int[] winnersArray = new int[winnersList.size()];
-        for (int i = 0; i < winnersArray.length; i++) {
-            winnersArray[i] = winnersList.get(i);
-        }
-        env.ui.announceWinner(winnersArray);
-    }
+        public void checkPlayer (Player player){
+            playersQueue.add(player);
 
-    public void checkSet(Player player) {
-        int[] cards = new int[3];
-        int i = 0;
-        //get player's cards and delete their tokens
-        for (int card : player.getPotentialSet()) {
-            cards[i] = card;
-            i++;
         }
-        boolean isSet = env.util.testSet(cards);
 
-        if (isSet) {
-            //clear player's actions:
-            removeSet(player.getPotentialSet());
-            player.setFrozenState(1);
-            placeCardsOnTable();
-            updateTimerDisplay(true);
-        } else {
-            player.setFrozenState(3);
+        public List<Integer> getDeck () {
+            return deck;
         }
     }
-
-    public void checkPlayer(Player player) {
-        playersQueue.add(player);
-
-    }
-
-    public List<Integer> getDeck() {
-        return deck;
-    }
-}

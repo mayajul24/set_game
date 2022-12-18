@@ -191,22 +191,17 @@ public class Player implements Runnable {
      */
     public void point() {
         // TODO implement
-        try {
-
+            env.ui.setScore(id, ++score);
             long timer = System.currentTimeMillis() + 2000;
             while (System.currentTimeMillis() < timer) {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
-            playerThread.sleep(1000);
 
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
 
         int ignored = table.countCards(); // this part is just for demonstration in the unit tests
-        env.ui.setScore(id, ++score);
+
     }
 
     /**
@@ -215,16 +210,15 @@ public class Player implements Runnable {
     public void penalty() {
         // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
 
-        try {
             long timer = System.currentTimeMillis() + 4000;
             while (System.currentTimeMillis() < timer) {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
-            playerThread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
+
+
+
     }
 
     public int getScore() {
