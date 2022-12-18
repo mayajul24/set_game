@@ -111,14 +111,12 @@ public class Dealer implements Runnable {
         // TODO implement
     }
 
-    private void removeSet(List<Integer> cards) {
+    private void removeSet(Player player) {
         for (int i = 0; i < 3; i++) {
-            int card = cards.get(0);
-            for (Player player : players) {
-                List<Integer> playerCards = player.getPotentialSet();
-                if (playerCards.contains(card)) {
-                    playerCards.remove(playerCards.indexOf(card));
-                    //System.out.print("aaaaaaa "+table.cardToSlot[card]);
+            int card = player.getPotentialSet().get(0);
+            for (Player p : players) {
+                if (p.getPotentialSet().contains(card)) {
+                    p.getPotentialSet().remove(p.getPotentialSet().indexOf(card));
                     table.removeToken(player.getId(), table.cardToSlot[card]);
                 }
             }
@@ -222,7 +220,7 @@ public class Dealer implements Runnable {
 
             if (isSet) {
                 //clear player's actions:
-                removeSet(player.getPotentialSet());
+                removeSet(player);
                 player.setFrozenState(1);
                 placeCardsOnTable();
                 updateTimerDisplay(true);

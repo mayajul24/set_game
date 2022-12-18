@@ -108,8 +108,6 @@ public class Player implements Runnable {
             if (keyPressesTokens.size() > 0) {
                 int token = keyPressesTokens.remove();
                 if (table.slotToCard[token] != null) {
-
-
                     int card = table.getSlotToCard()[token];
                     if (getPotentialSet().contains(card)) {
                         getPotentialSet().remove(potentialSet.indexOf(card));
@@ -171,7 +169,7 @@ public class Player implements Runnable {
 //        } catch (InterruptedException ignore) {
 //        }
         if (frozenState == 0) {
-            if (table.slotToCard[slot] != null){
+            if (table.slotToCard[slot] != null && keyPressesTokens.size()<3){
                 keyPressesTokens.add(slot);
             }
         }
