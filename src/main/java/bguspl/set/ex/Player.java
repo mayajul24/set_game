@@ -93,33 +93,34 @@ public class Player implements Runnable {
         while (!terminate) {
             //TODO: check tokens list, add tokens to the table and check if we reached 3 tokens notify dealer and send him/her tokens
             //check if player is frozen:
-            if(frozenState == 1){
+            if (frozenState == 1) {
                 point();
                 frozenState = 0;
             }
 
-            if(frozenState == 3){
+            if (frozenState == 3) {
                 penalty();
                 frozenState = 0;
             }
 
-
-
             if (keyPressesTokens.size() > 0) {
                 int token = keyPressesTokens.remove();
-                int card = table.getSlotToCard()[token];
+                if (table.slotToCard[token] != null) {
 
-                if (getPotentialSet().contains(card)) {
-                    getPotentialSet().remove(potentialSet.indexOf(card));
-                    table.removeToken(id, token);
-                } else if (getPotentialSet().size() < 3) {
-                    getPotentialSet().add(card);
-                    table.placeToken(id, token);
-                    if (getPotentialSet().size() == 3) {
-                        dealer.checkPlayer(this);
+
+                    int card = table.getSlotToCard()[token];
+                    if (getPotentialSet().contains(card)) {
+                        getPotentialSet().remove(potentialSet.indexOf(card));
+                        table.removeToken(id, token);
+                    } else if (getPotentialSet().size() < 3) {
+                        getPotentialSet().add(card);
+                        table.placeToken(id, token);
+                        if (getPotentialSet().size() == 3) {
+                            dealer.checkPlayer(this);
+                        }
                     }
-                }
 
+                }
             }
         }
         if (!human) try {
@@ -174,8 +175,11 @@ public class Player implements Runnable {
 //            }
 //        } catch (InterruptedException ignore) {
 //        }
-
-            keyPressesTokens.add(slot);
+        if (frozenState == 0) {
+            if (table.slotToCard[slot] != null){
+                keyPressesTokens.add(slot);
+            }
+        }
     }
 
 
@@ -191,7 +195,7 @@ public class Player implements Runnable {
 
             long timer = System.currentTimeMillis() + 2000;
             while (System.currentTimeMillis() < timer) {
-                env.ui.setFreeze(id,timer-System.currentTimeMillis());
+                env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
             playerThread.sleep(1000);
@@ -212,14 +216,12 @@ public class Player implements Runnable {
         // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
 
         try {
-
             long timer = System.currentTimeMillis() + 4000;
             while (System.currentTimeMillis() < timer) {
-                env.ui.setFreeze(id,timer-System.currentTimeMillis());
+                env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
-            playerThread.sleep(3000);
-
+            playerThread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -236,10 +238,12 @@ public class Player implements Runnable {
     public int getId() {
         return id;
     }
+
     public synchronized List<Integer> getPotentialSet() {
         return potentialSet;
     }
-    public void setFrozenState(int i){
+
+    public void setFrozenState(int i) {
         this.frozenState = i;
     }
 }

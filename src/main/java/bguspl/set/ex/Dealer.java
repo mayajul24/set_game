@@ -119,7 +119,7 @@ public class Dealer implements Runnable {
                 List<Integer> playerCards = player.getPotentialSet();
                 if (playerCards.contains(card)) {
                     playerCards.remove(playerCards.indexOf(card));
-                    System.out.print("aaaaaaa "+table.cardToSlot[card]);
+                    //System.out.print("aaaaaaa "+table.cardToSlot[card]);
                     table.removeToken(player.getId(), table.cardToSlot[card]);
                 }
             }
@@ -132,10 +132,9 @@ public class Dealer implements Runnable {
      */
     private void placeCardsOnTable() {
         Integer[] slotToCard = table.getSlotToCard();
-        for (int i = 0; i < slotToCard.length; i++) {
+        for (int i = 0; i < slotToCard.length-1; i++) {
             if (slotToCard[i] == null) {
-                int card = deck.get(0);
-                table.placeCard(deck.remove(card), i);
+                table.placeCard(deck.remove(0), i);
             }
         }
     }
