@@ -83,7 +83,6 @@ public class Dealer implements Runnable {
                 Player currentPlayer = playersQueue.remove();
                 checkSet(currentPlayer);
             }
-            removeCardsFromTable();
             placeCardsOnTable();
         }
 
@@ -171,11 +170,10 @@ public class Dealer implements Runnable {
                 table.removeCard(i);
                 deck.add(card);
                 for (Player player : players) {
-                    List<Integer> tokens = player.getPotentialSet();
-                    if (tokens.contains(i)) {
-                        tokens.remove(tokens.indexOf(i));
+                    if (player.getPotentialSet().contains(card)) {
+                        player.getPotentialSet().remove(player.getPotentialSet().indexOf(card));
                         table.removeToken(player.getId(), i);
-                        player.getPotentialSet().remove(player.getPotentialSet().indexOf(table.slotToCard[i]));
+                     //   player.getPotentialSet().remove(player.getPotentialSet().indexOf(table.slotToCard[i]));
                     }
                 }
             }

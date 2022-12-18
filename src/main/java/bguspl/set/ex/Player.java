@@ -88,7 +88,9 @@ public class Player implements Runnable {
     public void run() {
         playerThread = Thread.currentThread();
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + "starting.");
-        if (!human) createArtificialIntelligence();
+        if (!human){
+            createArtificialIntelligence();
+        }
 
         while (!terminate) {
             //TODO: check tokens list, add tokens to the table and check if we reached 3 tokens notify dealer and send him/her tokens
@@ -143,13 +145,6 @@ public class Player implements Runnable {
                 Random random = new Random();
                 int slot = random.nextInt(11);
                 keyPressed(slot);
-
-                try {
-                    synchronized (this) {
-                        wait();
-                    }
-                } catch (InterruptedException ignored) {
-                }
             }
             env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
         }, "computer-" + id);
@@ -193,7 +188,7 @@ public class Player implements Runnable {
         // TODO implement
             env.ui.setScore(id, ++score);
             long timer = System.currentTimeMillis() + 2000;
-            while (System.currentTimeMillis() < timer) {
+            while (System.currentTimeMillis() < timer-1000) {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
@@ -211,7 +206,7 @@ public class Player implements Runnable {
         // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
 
             long timer = System.currentTimeMillis() + 4000;
-            while (System.currentTimeMillis() < timer) {
+            while (System.currentTimeMillis() < timer-1000) {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
