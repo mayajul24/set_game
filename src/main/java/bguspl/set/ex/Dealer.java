@@ -214,14 +214,8 @@ public class Dealer implements Runnable {
         }
 
         public void checkSet (Player player){
-            int[] cards = new int[3];
-            int i = 0;
-            //get player's cards and delete their tokens
-            for (int card : player.getPotentialSet()) {
-                cards[i] = card;
-                i++;
-            }
-            boolean isSet = env.util.testSet(cards);
+
+            boolean isSet = env.util.testSet(player.getPotentialSet());
 
             if (isSet) {
                 //clear player's actions:
