@@ -124,8 +124,7 @@ public class Dealer implements Runnable {
                         p.removeFromPotentialSet(card);
                         table.removeToken(p.getId(), table.cardToSlot[card]);
                     }
-                }
-                else {
+                } else {
                     table.removeToken(player.getId(), table.cardToSlot[card]);
                 }
             }
@@ -222,24 +221,25 @@ public class Dealer implements Runnable {
     }
 
     public void checkSet(Player player) {
+        if (player.getPotentialSetSize() == 3) {
+            boolean isSet = env.util.testSet(player.getPotentialSet());
 
-        boolean isSet = env.util.testSet(player.getPotentialSet());
-
-        if (isSet) {
-            //clear player's actions:
-            removeSet(player);
-            player.setFrozenState(1);
-            placeCardsOnTable();
-            updateTimerDisplay(true);
-        } else {
-            player.setFrozenState(3);
+            if (isSet) {
+                //clear player's actions:
+                removeSet(player);
+                player.setFrozenState(1);
+                placeCardsOnTable();
+                updateTimerDisplay(true);
+            } else {
+                player.setFrozenState(3);
+            }
         }
     }
+        public void checkPlayer (Player player){
+            playersQueue.add(player);
 
-    public void checkPlayer(Player player) {
-        playersQueue.add(player);
+        }
 
-    }
 
     public List<Integer> getDeck() {
         return deck;
