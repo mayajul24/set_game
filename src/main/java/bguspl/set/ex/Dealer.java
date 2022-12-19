@@ -75,8 +75,8 @@ public class Dealer implements Runnable {
      * The inner loop of the dealer thread that runs as long as the countdown did not time out.
      */
     private void timerLoop() {
-        reshuffleTime = System.currentTimeMillis() + 60000;
-        while (!terminate && System.currentTimeMillis() < reshuffleTime) {
+        reshuffleTime = System.currentTimeMillis() + env.config.turnTimeoutMillis+1000;
+        while (!terminate && System.currentTimeMillis() <= reshuffleTime) {
             sleepUntilWokenOrTimeout();
             updateTimerDisplay(false);
             while (!playersQueue.isEmpty()) {
@@ -163,10 +163,10 @@ public class Dealer implements Runnable {
      */
     private void updateTimerDisplay(boolean reset) {
         if (reset) {
-            reshuffleTime = 60000 + System.currentTimeMillis();
+            reshuffleTime = env.config.turnTimeoutMillis + System.currentTimeMillis();
         } else {
             long currentTime = System.currentTimeMillis();
-            env.ui.setCountdown(reshuffleTime - currentTime + 1000, false);
+            env.ui.setCountdown(Math.round((reshuffleTime - currentTime+1000)/1000)*1000, env.config.turnTimeoutWarningMillis>=reshuffleTime-currentTime+1000);
         }
     }
 

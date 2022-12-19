@@ -149,7 +149,7 @@ public class Player implements Runnable {
             while (!terminate) {
                 // TODO implement player key press simulator
                 Random random = new Random();
-                int slot = random.nextInt(11);
+                int slot = random.nextInt(12);
                 keyPressed(slot);
             }
             env.logger.info("Thread " + Thread.currentThread().getName() + " terminated.");
@@ -192,7 +192,7 @@ public class Player implements Runnable {
         public void point () {
             // TODO implement
             env.ui.setScore(id, ++score);
-            long timer = System.currentTimeMillis() + 2000;
+            long timer = System.currentTimeMillis() + env.config.pointFreezeMillis + 1000;
             while (System.currentTimeMillis() < timer - 1000) {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
@@ -209,7 +209,7 @@ public class Player implements Runnable {
         public void penalty () {
             // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
 
-            long timer = System.currentTimeMillis() + 4000;
+            long timer = System.currentTimeMillis() + env.config.penaltyFreezeMillis + 1000;
             while (System.currentTimeMillis() < timer - 1000) {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
