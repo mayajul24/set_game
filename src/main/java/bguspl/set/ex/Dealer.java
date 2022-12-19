@@ -54,7 +54,7 @@ public class Dealer implements Runnable {
      */
     @Override
     public void run() {
-        env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " starting.");
+        env.logger.info("Thread " + Thread.currentThread().getName() + " starting.");
         for (Player player : players) {
             Thread playerThread = new Thread(player);
             playerThread.start();
@@ -68,7 +68,7 @@ public class Dealer implements Runnable {
             removeAllCardsFromTable();
         }
         announceWinners();
-        env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
+        env.logger.info("Thread " + Thread.currentThread().getName() + " terminated.");
     }
 
     /**
@@ -88,7 +88,7 @@ public class Dealer implements Runnable {
     }
 
     /**
-     * Called when the game should be terminated due to an external event.
+     * Called when the game should be terminated.
      */
     public void terminate() {
         // TODO implement

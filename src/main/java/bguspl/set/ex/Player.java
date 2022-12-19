@@ -92,7 +92,7 @@ public class Player implements Runnable {
     @Override
     public void run() {
         playerThread = Thread.currentThread();
-        env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + "starting.");
+        env.logger.info("Thread " + Thread.currentThread().getName() + " starting.");
         if (!human) {
             createArtificialIntelligence();
         }
@@ -135,7 +135,7 @@ public class Player implements Runnable {
             aiThread.join();
         } catch (InterruptedException ignored) {
         }
-        env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
+        env.logger.info("Thread " + Thread.currentThread().getName() + " terminated.");
     }
 
     /**
@@ -145,20 +145,20 @@ public class Player implements Runnable {
     private void createArtificialIntelligence() {
         // note: this is a very very smart AI (!)
         aiThread = new Thread(() -> {
-            env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " starting.");
+            env.logger.info("Thread " + Thread.currentThread().getName() + " starting.");
             while (!terminate) {
                 // TODO implement player key press simulator
                 Random random = new Random();
                 int slot = random.nextInt(11);
                 keyPressed(slot);
             }
-            env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
+            env.logger.info("Thread " + Thread.currentThread().getName() + " terminated.");
         }, "computer-" + id);
         aiThread.start();
     }
 
     /**
-     * Called when the game should be terminated due to an external event.
+     * Called when the game should be terminated.
      */
     public void terminate() {
         terminate = true;
