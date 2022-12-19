@@ -118,10 +118,10 @@ public class Dealer implements Runnable {
 
     private void removeSet(Player player) {
         for (int i = 0; i < 3; i++) {
-            int card = player.getPotentialSet().get(0);
+            int card = player.getPotentialSet()[i];
             for (Player p : players) {
-                if (p.getPotentialSet().contains(card)) {
-                    p.getPotentialSet().remove(p.getPotentialSet().indexOf(card));
+                if (p.potentialSetContains(card)) {
+                    p.removeFromPotentialSet(card);
                     table.removeToken(player.getId(), table.cardToSlot[card]);
                 }
             }
@@ -173,8 +173,8 @@ public class Dealer implements Runnable {
                 table.removeCard(i);
                 deck.add(card);
                 for (Player player : players) {
-                    if (player.getPotentialSet().contains(card)) {
-                        player.getPotentialSet().remove(player.getPotentialSet().indexOf(card));
+                    if (player.potentialSetContains(card)) {
+                        player.removeFromPotentialSet(card);
                         table.removeToken(player.getId(), i);
                      //   player.getPotentialSet().remove(player.getPotentialSet().indexOf(table.slotToCard[i]));
                     }
