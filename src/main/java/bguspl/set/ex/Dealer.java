@@ -30,7 +30,7 @@ public class Dealer implements Runnable {
     private final List<Integer> deck;
 
     /**
-     * True iff game should be terminated due to an external event.
+     * True iff game should be terminated.
      */
     private volatile boolean terminate;
 
