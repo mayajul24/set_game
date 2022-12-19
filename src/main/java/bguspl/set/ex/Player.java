@@ -2,10 +2,7 @@ package bguspl.set.ex;
 
 import java.util.*;
 import java.util.logging.Level;
-
 import bguspl.set.Env;
-import org.omg.Messaging.SyncScopeHelper;
-
 
 /**
  * This class manages the players' threads and data
@@ -115,13 +112,13 @@ public class Player implements Runnable {
                 int token = keyPressesTokens.remove();
                 if (table.slotToCard[token] != null) {
                     int card = table.getSlotToCard()[token];
-                    if (getPotentialSet().contains(card)) {
-                        getPotentialSet().remove(potentialSet.indexOf(card));
+                    if (potentialSetContains(card)) {
+                        removeFromPotentialSet(card);
                         table.removeToken(id, token);
-                    } else if (getPotentialSet().size() < 3) {
-                        getPotentialSet().add(card);
+                    } else if (potentialSetSize < 3) {
+                        addToPotentialSet(card);
                         table.placeToken(id, token);
-                        if (getPotentialSet().size() == 3) {
+                        if (potentialSetSize == 3) {
                             dealer.checkPlayer(this);
                         }
                     }
@@ -159,13 +156,12 @@ public class Player implements Runnable {
      * Called when the game should be terminated due to an external event.
      */
     public void terminate() {
-        // TODO implement
         terminate = true;
         try {
             playerThread.join();
         } catch (InterruptedException e) {
         }
-        ;
+
     }
         /**
          * This method is called when a key is pressed.
@@ -218,8 +214,6 @@ public class Player implements Runnable {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
-
-
         }
 
         public int getScore () {
