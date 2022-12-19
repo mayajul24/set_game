@@ -200,7 +200,7 @@ public class Dealer implements Runnable {
         int maxScore = 0;
         int winnerId = 0;
         for (int i = 0; i < players.length; i++) {
-            int playerScore = players[i].getScore();
+            int playerScore = players[i].score();
             if (playerScore > maxScore) {
                 maxScore = playerScore;
                 winnerId = i;
@@ -209,8 +209,8 @@ public class Dealer implements Runnable {
         winnersList.add(winnerId);
 
         for (int i = 0; i < players.length; i++) {
-            int playerScore = players[i].getScore();
-            if (i != winnerId & playerScore == players[winnerId].getScore()) {
+            int playerScore = players[i].score();
+            if (i != winnerId & playerScore == players[winnerId].score()) {
                 winnersList.add(i);
             }
         }

@@ -216,7 +216,7 @@ public class Player implements Runnable {
             env.ui.setFreeze(id, -1000);
         }
 
-        public int getScore () {
+        public int score() {
             return score;
         }
 
