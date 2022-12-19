@@ -59,13 +59,13 @@ public class Dealer implements Runnable {
             Thread playerThread = new Thread(player);
             playerThread.start();
         }
+
         while (!shouldFinish()) {
             Collections.shuffle(deck);
             placeCardsOnTable();
             timerLoop();
             updateTimerDisplay(false);
             removeAllCardsFromTable();
-
         }
         announceWinners();
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + " terminated.");
@@ -85,7 +85,6 @@ public class Dealer implements Runnable {
             }
             placeCardsOnTable();
         }
-
     }
 
     /**
@@ -94,8 +93,7 @@ public class Dealer implements Runnable {
     public void terminate() {
         // TODO implement
         terminate = true;
-        for (Player player: players)
-        {
+        for (Player player : players) {
             player.terminate();
         }
     }
@@ -119,14 +117,21 @@ public class Dealer implements Runnable {
     private void removeSet(Player player) {
         for (int i = 0; i < 3; i++) {
             int card = player.getPotentialSet()[i];
+            System.out.println("size!!!: " + Arrays.toString(player.getPotentialSet()));
             for (Player p : players) {
-                if (p.potentialSetContains(card)) {
-                    p.removeFromPotentialSet(card);
+                if (p.getId() != player.getId()) {
+                    if (p.potentialSetContains(card)) {
+                        p.removeFromPotentialSet(card);
+                        table.removeToken(p.getId(), table.cardToSlot[card]);
+                    }
+                }
+                else {
                     table.removeToken(player.getId(), table.cardToSlot[card]);
                 }
             }
             table.removeCard(table.cardToSlot[card]);
         }
+        player.clearSet();
     }
 
     /**
@@ -148,7 +153,10 @@ public class Dealer implements Runnable {
      */
     private void sleepUntilWokenOrTimeout() {
         // TODO implement
-
+        try {
+            Thread.currentThread().sleep(1000);
+        } catch (InterruptedException e) {
+        }
     }
 
     /**
@@ -176,64 +184,64 @@ public class Dealer implements Runnable {
                     if (player.potentialSetContains(card)) {
                         player.removeFromPotentialSet(card);
                         table.removeToken(player.getId(), i);
-                     //   player.getPotentialSet().remove(player.getPotentialSet().indexOf(table.slotToCard[i]));
+                        //   player.getPotentialSet().remove(player.getPotentialSet().indexOf(table.slotToCard[i]));
                     }
                 }
             }
         }
     }
 
-        /**
-         * Check who is/are the winner/s and displays them.
-         */
-        private void announceWinners () {
-            // TODO implement
-            List<Integer> winnersList = new ArrayList<Integer>();
-            int maxScore = 0;
-            int winnerId = 0;
-            for (int i = 0; i < players.length; i++) {
-                int playerScore = players[i].getScore();
-                if (playerScore > maxScore) {
-                    maxScore = playerScore;
-                    winnerId = i;
-                }
-            }
-            winnersList.add(winnerId);
-
-            for (int i = 0; i < players.length; i++) {
-                int playerScore = players[i].getScore();
-                if (i != winnerId & playerScore == players[winnerId].getScore()) {
-                    winnersList.add(i);
-                }
-            }
-            int[] winnersArray = new int[winnersList.size()];
-            for (int i = 0; i < winnersArray.length; i++) {
-                winnersArray[i] = winnersList.get(i);
-            }
-            env.ui.announceWinner(winnersArray);
-        }
-
-        public void checkSet (Player player){
-
-            boolean isSet = env.util.testSet(player.getPotentialSet());
-
-            if (isSet) {
-                //clear player's actions:
-                removeSet(player);
-                player.setFrozenState(1);
-                placeCardsOnTable();
-                updateTimerDisplay(true);
-            } else {
-                player.setFrozenState(3);
+    /**
+     * Check who is/are the winner/s and displays them.
+     */
+    private void announceWinners() {
+        // TODO implement
+        List<Integer> winnersList = new ArrayList<Integer>();
+        int maxScore = 0;
+        int winnerId = 0;
+        for (int i = 0; i < players.length; i++) {
+            int playerScore = players[i].getScore();
+            if (playerScore > maxScore) {
+                maxScore = playerScore;
+                winnerId = i;
             }
         }
+        winnersList.add(winnerId);
 
-        public void checkPlayer (Player player){
-            playersQueue.add(player);
-
+        for (int i = 0; i < players.length; i++) {
+            int playerScore = players[i].getScore();
+            if (i != winnerId & playerScore == players[winnerId].getScore()) {
+                winnersList.add(i);
+            }
         }
+        int[] winnersArray = new int[winnersList.size()];
+        for (int i = 0; i < winnersArray.length; i++) {
+            winnersArray[i] = winnersList.get(i);
+        }
+        env.ui.announceWinner(winnersArray);
+    }
 
-        public List<Integer> getDeck () {
-            return deck;
+    public void checkSet(Player player) {
+
+        boolean isSet = env.util.testSet(player.getPotentialSet());
+
+        if (isSet) {
+            //clear player's actions:
+            removeSet(player);
+            player.setFrozenState(1);
+            placeCardsOnTable();
+            updateTimerDisplay(true);
+        } else {
+            player.setFrozenState(3);
         }
     }
+
+    public void checkPlayer(Player player) {
+        playersQueue.add(player);
+
+    }
+
+    public List<Integer> getDeck() {
+        return deck;
+    }
+}
