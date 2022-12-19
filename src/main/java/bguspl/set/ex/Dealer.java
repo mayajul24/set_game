@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
+import java.util.concurrent.*;
 
 /**
  * This class manages the dealer's threads and data
@@ -39,14 +39,14 @@ public class Dealer implements Runnable {
      */
     private long reshuffleTime = 0;
 
-    private Queue<Player> playersQueue;
+    private BlockingQueue<Player> playersQueue;
 
     public Dealer(Env env, Table table, Player[] players) {
         this.env = env;
         this.table = table;
         this.players = players;
         deck = IntStream.range(0, env.config.deckSize).boxed().collect(Collectors.toList());
-        playersQueue = new LinkedList<Player>();
+        playersQueue = new LinkedBlockingQueue<Player>();
     }
 
     /**
@@ -93,6 +93,11 @@ public class Dealer implements Runnable {
      */
     public void terminate() {
         // TODO implement
+        terminate = true;
+        for (Player player: players)
+        {
+            player.terminate();
+        }
     }
 
     /**

@@ -88,7 +88,7 @@ public class Player implements Runnable {
     public void run() {
         playerThread = Thread.currentThread();
         env.logger.log(Level.INFO, "Thread " + Thread.currentThread().getName() + "starting.");
-        if (!human){
+        if (!human) {
             createArtificialIntelligence();
         }
 
@@ -154,83 +154,85 @@ public class Player implements Runnable {
      */
     public void terminate() {
         // TODO implement
+        terminate = true;
+        try {
+            playerThread.join();
+        } catch (InterruptedException e) {
+        }
+        ;
     }
-
-    /**
-     * This method is called when a key is pressed.
-     *
-     * @param slot - the slot corresponding to the key pressed.
-     */
-    public void keyPressed(int slot) {
+        /**
+         * This method is called when a key is pressed.
+         *
+         * @param slot - the slot corresponding to the key pressed.
+         */
+        public void keyPressed ( int slot){
 //        try {
 //            while (table.countCards() < 12 & dealer.getDeck().size() != 0 ) {
 //                this.wait();
 //            }
 //        } catch (InterruptedException ignore) {
 //        }
-        if (frozenState == 0) {
-            if (table.slotToCard[slot] != null && keyPressesTokens.size()<3){
-                keyPressesTokens.add(slot);
+            if (frozenState == 0) {
+                if (table.slotToCard[slot] != null && keyPressesTokens.size() < 3) {
+                    keyPressesTokens.add(slot);
+                }
             }
         }
-    }
 
 
-    /**
-     * Award a point to a player and perform other related actions.
-     *
-     * @post - the player's score is increased by 1.
-     * @post - the player's score is updated in the ui.
-     */
-    public void point() {
-        // TODO implement
+        /**
+         * Award a point to a player and perform other related actions.
+         *
+         * @post - the player's score is increased by 1.
+         * @post - the player's score is updated in the ui.
+         */
+        public void point () {
+            // TODO implement
             env.ui.setScore(id, ++score);
             long timer = System.currentTimeMillis() + 2000;
-            while (System.currentTimeMillis() < timer-1000) {
+            while (System.currentTimeMillis() < timer - 1000) {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
 
 
+            int ignored = table.countCards(); // this part is just for demonstration in the unit tests
 
-        int ignored = table.countCards(); // this part is just for demonstration in the unit tests
+        }
 
-    }
-
-    /**
-     * Penalize a player and perform other related actions.
-     */
-    public void penalty() {
-        // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
+        /**
+         * Penalize a player and perform other related actions.
+         */
+        public void penalty () {
+            // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
 
             long timer = System.currentTimeMillis() + 4000;
-            while (System.currentTimeMillis() < timer-1000) {
+            while (System.currentTimeMillis() < timer - 1000) {
                 env.ui.setFreeze(id, timer - System.currentTimeMillis());
             }
             env.ui.setFreeze(id, -1000);
 
 
+        }
 
+        public int getScore () {
+            return score;
+        }
 
+        public Queue<Integer> getKeyPressesTokens () {
+            return keyPressesTokens;
+        }
+
+        public int getId () {
+            return id;
+        }
+
+        public synchronized List<Integer> getPotentialSet () {
+            return potentialSet;
+        }
+
+        public void setFrozenState ( int i){
+            this.frozenState = i;
+        }
     }
-
-    public int getScore() {
-        return score;
-    }
-
-    public Queue<Integer> getKeyPressesTokens() {
-        return keyPressesTokens;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public synchronized List<Integer> getPotentialSet() {
-        return potentialSet;
-    }
-
-    public void setFrozenState(int i) {
-        this.frozenState = i;
-    }
-}
