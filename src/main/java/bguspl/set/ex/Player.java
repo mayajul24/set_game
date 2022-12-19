@@ -79,6 +79,7 @@ public class Player implements Runnable {
         this.keyPressesTokens = new LinkedList<Integer>();
         this.potentialSet = new ArrayList<Integer>();
         this.frozenState = 0;
+        //hasish im hasearot
     }
 
     /**
