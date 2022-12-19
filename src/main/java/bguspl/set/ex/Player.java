@@ -57,9 +57,11 @@ public class Player implements Runnable {
     private Dealer dealer;
 
     private Queue<Integer> keyPressesTokens;
-    private List<Integer> potentialSet;
+    private int[] potentialSet;
 
     private int frozenState;
+
+    private int potentialSetSize;
 
     /**
      * The class constructor.
@@ -77,9 +79,12 @@ public class Player implements Runnable {
         this.id = id;
         this.human = human;
         this.keyPressesTokens = new LinkedList<Integer>();
-        this.potentialSet = new ArrayList<Integer>();
+        this.potentialSet = new int[3];
+        for(int i=0; i<3; i++){
+            potentialSet[i] = -1;
+        }
         this.frozenState = 0;
-        //hasish im hasearot
+        this.potentialSetSize = 0;
     }
 
     /**
@@ -229,11 +234,47 @@ public class Player implements Runnable {
             return id;
         }
 
-        public synchronized List<Integer> getPotentialSet () {
+        public synchronized int[] getPotentialSet () {
             return potentialSet;
         }
 
         public void setFrozenState ( int i){
             this.frozenState = i;
         }
+
+
+    public synchronized int getPotentialSetSize(){
+        return potentialSetSize;
     }
+
+    public synchronized void addToPotentialSet(int card){
+        getPotentialSet()[potentialSetSize] = card;
+        potentialSetSize++;
+    }
+
+    public synchronized void removeFromPotentialSet(int card){
+        boolean found = false;
+        for(int i =0 ; i<3 & !found ; i++){
+            if (getPotentialSet()[i] == card){
+                found = true;
+                for(int j = i; j<2;j++){
+                    getPotentialSet()[j] = getPotentialSet()[j+1];
+
+                }
+
+                getPotentialSet()[2] = -1;
+                potentialSetSize--;
+            }
+        }
+    }
+
+    public synchronized boolean potentialSetContains(int card){
+        for(int i = 0; i< 3; i++){
+            if(getPotentialSet()[i] == card){
+                return true;
+            }
+        }
+        return false;
+    }
+
+}
