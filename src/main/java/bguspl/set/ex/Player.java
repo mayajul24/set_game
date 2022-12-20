@@ -161,6 +161,10 @@ public class Player implements Runnable {
      * Called when the game should be terminated.
      */
     public void terminate() {
+        long timer = System.currentTimeMillis() + env.config.tableDelayMillis;
+        while(timer>= System.currentTimeMillis()){
+            terminate = false;
+        }
         terminate = true;
         try {
             playerThread.join();
