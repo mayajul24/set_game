@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Level;
+
 import bguspl.set.Env;
 
 /**
@@ -79,7 +80,7 @@ public class Player implements Runnable {
         this.human = human;
         this.keyPressesTokens = new LinkedBlockingQueue<Integer>();
         this.potentialSet = new int[3];
-        for(int i=0; i<3; i++){
+        for (int i = 0; i < 3; i++) {
             potentialSet[i] = -1;
         }
         this.frozenState = 0;
@@ -113,7 +114,8 @@ public class Player implements Runnable {
             if (keyPressesTokens.size() > 0) {
                 int token = keyPressesTokens.remove();
                 if (table.slotToCard[token] != null) {
-                    int card = table.getSlotToCard()[token];
+                    //  System.out.println(table.slotToCard[token]);
+                    int card = table.slotToCard[token];
                     if (potentialSetContains(card)) {
                         removeFromPotentialSet(card);
                         table.removeToken(id, token);
@@ -122,12 +124,19 @@ public class Player implements Runnable {
                         table.placeToken(id, token);
                         if (potentialSetSize == 3) {
                             dealer.checkPlayer(this);
+                            synchronized (this) {
+                                try {
+                                    this.wait();
+                                } catch (InterruptedException e) {
+                                }
+                            }
                         }
                     }
-
                 }
+
             }
         }
+
         if (!human) try {
             aiThread.join();
         } catch (InterruptedException ignored) {
@@ -168,91 +177,91 @@ public class Player implements Runnable {
         }
 
     }
-        /**
-         * This method is called when a key is pressed.
-         *
-         * @param slot - the slot corresponding to the key pressed.
-         */
-        public void keyPressed ( int slot){
-            if (frozenState == 0) {
-                if (table.slotToCard[slot] != null && keyPressesTokens.size() < 3) {
-                    keyPressesTokens.add(slot);
-                }
+
+    /**
+     * This method is called when a key is pressed.
+     *
+     * @param slot - the slot corresponding to the key pressed.
+     */
+    public void keyPressed(int slot) {
+        if (frozenState == 0) {
+            if (table.slotToCard[slot] != null && keyPressesTokens.size() < 3) {
+                keyPressesTokens.add(slot);
             }
         }
+    }
 
-
-        /**
-         * Award a point to a player and perform other related actions.
-         *
-         * @post - the player's score is increased by 1.
-         * @post - the player's score is updated in the ui.
-         */
-        public void point () {
-            // TODO implement
-            env.ui.setScore(id, ++score);
-            long timer = System.currentTimeMillis() + env.config.pointFreezeMillis + 1000;
-            while (System.currentTimeMillis() < timer - 1000) {
-                env.ui.setFreeze(id, timer - System.currentTimeMillis());
-            }
-            env.ui.setFreeze(id, -1000);
-
-
-            int ignored = table.countCards(); // this part is just for demonstration in the unit tests
-
+    /**
+     * Award a point to a player and perform other related actions.
+     *
+     * @post - the player's score is increased by 1.
+     * @post - the player's score is updated in the ui.
+     */
+    public void point() {
+        // TODO implement
+        env.ui.setScore(id, ++score);
+        long timer = System.currentTimeMillis() + env.config.pointFreezeMillis + 1000;
+        while (System.currentTimeMillis() < timer - 1000) {
+            env.ui.setFreeze(id, timer - System.currentTimeMillis());
         }
+        env.ui.setFreeze(id, -1000);
 
-        /**
-         * Penalize a player and perform other related actions.
-         */
-        public void penalty () {
-            // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
 
-            long timer = System.currentTimeMillis() + env.config.penaltyFreezeMillis + 1000;
-            while (System.currentTimeMillis() < timer - 1000) {
-                env.ui.setFreeze(id, timer - System.currentTimeMillis());
-            }
-            env.ui.setFreeze(id, -1000);
+        int ignored = table.countCards(); // this part is just for demonstration in the unit tests
+
+    }
+
+    /**
+     * Penalize a player and perform other related actions.
+     */
+    public void penalty() {
+        // TODO implement: if(playerThread.getState() != Thread.State.WAITING)
+
+        long timer = System.currentTimeMillis() + env.config.penaltyFreezeMillis + 1000;
+        while (System.currentTimeMillis() < timer - 1000) {
+            env.ui.setFreeze(id, timer - System.currentTimeMillis());
         }
+        env.ui.setFreeze(id, -1000);
+    }
 
-        public int score() {
-            return score;
-        }
+    public int score() {
+        return score;
+    }
 
-        public Queue<Integer> getKeyPressesTokens () {
-            return keyPressesTokens;
-        }
+    public Queue<Integer> getKeyPressesTokens() {
+        return keyPressesTokens;
+    }
 
-        public int getId () {
-            return id;
-        }
+    public int getId() {
+        return id;
+    }
 
-        public synchronized int[] getPotentialSet () {
-            return potentialSet;
-        }
+    public synchronized int[] getPotentialSet() {
+        return potentialSet;
+    }
 
-        public void setFrozenState ( int i){
-            this.frozenState = i;
-        }
+    public void setFrozenState(int i) {
+        this.frozenState = i;
+    }
 
 
-    public synchronized int getPotentialSetSize(){
+    public synchronized int getPotentialSetSize() {
         return potentialSetSize;
     }
 
-    public synchronized void addToPotentialSet(int card){
+    public synchronized void addToPotentialSet(int card) {
         getPotentialSet()[potentialSetSize] = card;
         potentialSetSize++;
     }
 
-    public synchronized void removeFromPotentialSet(int card){
+    public synchronized void removeFromPotentialSet(int card) {
         boolean found = false;
-        for(int i =0 ; i<3 & !found ; i++){
-            if (getPotentialSet()[i] == card){
+        for (int i = 0; i < 3 & !found; i++) {
+            if (getPotentialSet()[i] == card) {
                 found = true;
 
-                for(int j = i; j<2;j++){
-                    getPotentialSet()[j] = getPotentialSet()[j+1];
+                for (int j = i; j < 2; j++) {
+                    getPotentialSet()[j] = getPotentialSet()[j + 1];
                 }
                 getPotentialSet()[2] = -1;
                 potentialSetSize--;
@@ -260,16 +269,16 @@ public class Player implements Runnable {
         }
     }
 
-    public synchronized boolean potentialSetContains(int card){
-        for(int i = 0; i< 3; i++){
-            if(getPotentialSet()[i] == card){
+    public synchronized boolean potentialSetContains(int card) {
+        for (int i = 0; i < 3; i++) {
+            if (getPotentialSet()[i] == card) {
                 return true;
             }
         }
         return false;
     }
-    public synchronized void clearSet()
-    {
+
+    public synchronized void clearSet() {
         for (int i = 0; i < 3; i++) {
             potentialSet[i] = -1;
         }

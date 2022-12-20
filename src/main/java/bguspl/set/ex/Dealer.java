@@ -63,6 +63,10 @@ public class Dealer implements Runnable {
         while (!shouldFinish()) {
             Collections.shuffle(deck);
             placeCardsOnTable();
+            synchronized (players){
+
+                players.notifyAll();
+            }
             timerLoop();
             updateTimerDisplay(false);
             removeAllCardsFromTable();
@@ -81,6 +85,7 @@ public class Dealer implements Runnable {
             updateTimerDisplay(false);
             while (!playersQueue.isEmpty()) {
                 Player currentPlayer = playersQueue.remove();
+
                 checkSet(currentPlayer);
             }
             placeCardsOnTable();
@@ -117,21 +122,24 @@ public class Dealer implements Runnable {
     }
 
     private void removeSet(Player player) {
-        for (int i = 0; i < 3; i++) {
-            int card = player.getPotentialSet()[i];
-            for (Player p : players) {
-                if (p.getId() != player.getId()) {
-                    if (p.potentialSetContains(card)) {
-                        p.removeFromPotentialSet(card);
-                        table.removeToken(p.getId(), table.cardToSlot[card]);
+            for (int i = 0; i < 3; i++) {
+                int card = player.getPotentialSet()[i];
+                for (Player p : players) {
+                    if (p.getId() != player.getId()) {
+                        if (p.potentialSetContains(card)) {
+                            p.removeFromPotentialSet(card);
+                            table.removeToken(p.getId(), table.cardToSlot[card]);
+                        }
                     }
-                } else {
-                    table.removeToken(player.getId(), table.cardToSlot[card]);
+                    else {
+                        table.removeToken(player.getId(), table.cardToSlot[card]);
+                    }
                 }
+                table.removeCard(table.cardToSlot[card]);
+
             }
-            table.removeCard(table.cardToSlot[card]);
-        }
-        player.clearSet();
+            player.clearSet();
+
     }
 
     /**
@@ -190,7 +198,6 @@ public class Dealer implements Runnable {
                     if (player.potentialSetContains(card)) {
                         player.removeFromPotentialSet(card);
                         table.removeToken(player.getId(), i);
-                        //   player.getPotentialSet().remove(player.getPotentialSet().indexOf(table.slotToCard[i]));
                     }
                 }
             }
@@ -244,8 +251,13 @@ public class Dealer implements Runnable {
             } else {
                 player.setFrozenState(3);
             }
+            synchronized (player){
+                player.notifyAll();
+            }
+            }
         }
-    }
+
+
 
     public void checkPlayer(Player player) {
         if (!playersQueue.contains(player)) {

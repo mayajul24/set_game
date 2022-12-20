@@ -144,7 +144,7 @@ public class Table {
         return slotToCard;
     }
 
-    public Integer[] getCardToSlot() {
+    public synchronized Integer[] getCardToSlot() {
         return cardToSlot;
     }
 }
