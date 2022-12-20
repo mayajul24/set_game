@@ -63,6 +63,8 @@ public class Player implements Runnable {
 
     private int potentialSetSize;
 
+    private Object key;
+
     /**
      * The class constructor.
      *
@@ -85,6 +87,7 @@ public class Player implements Runnable {
         }
         this.frozenState = 0;
         this.potentialSetSize = 0;
+        this.key = new Object();
     }
 
     /**
@@ -101,15 +104,7 @@ public class Player implements Runnable {
         while (!terminate) {
             //TODO: check tokens list, add tokens to the table and check if we reached 3 tokens notify dealer and send him/her tokens
             //check if player is frozen:
-            if (frozenState == 1) {
-                point();
-                frozenState = 0;
-            }
 
-            if (frozenState == 3) {
-                penalty();
-                frozenState = 0;
-            }
 
             if (keyPressesTokens.size() > 0) {
                 int token = keyPressesTokens.remove();
@@ -123,19 +118,24 @@ public class Player implements Runnable {
                         addToPotentialSet(card);
                         table.placeToken(id, token);
                         if (potentialSetSize == 3) {
-                            dealer.checkPlayer(this);
-                            synchronized (this) {
-                                try {
-                                    this.wait();
-                                } catch (InterruptedException e) {
-                                }
+                            System.out.println("dealer is going to check me: "+id);
+                            checkPlayer();
                             }
                         }
                     }
                 }
+            if (frozenState == 1) {
+                point();
+                frozenState = 0;
+            }
+
+            if (frozenState == 3) {
+                penalty();
+                frozenState = 0;
+            }
 
             }
-        }
+
 
         if (!human) try {
             aiThread.join();
@@ -158,7 +158,7 @@ public class Player implements Runnable {
 //                    synchronized (this) { Thread.currentThread().sleep(10); }
 //                } catch (InterruptedException ignored) {}
                 Random random = new Random();
-                int slot = random.nextInt(12);
+                int slot = random.nextInt(env.config.tableSize);
                 keyPressed(slot);
             }
             env.logger.info("Thread " + Thread.currentThread().getName() + " terminated.");
@@ -175,7 +175,6 @@ public class Player implements Runnable {
             playerThread.join();
         } catch (InterruptedException e) {
         }
-
     }
 
     /**
@@ -284,4 +283,21 @@ public class Player implements Runnable {
         }
         potentialSetSize = 0;
     }
+
+    public void checkPlayer() {
+        if (!dealer.getPlayersQueue().contains(this)) {
+            dealer.getPlayersQueue().add(this);
+            synchronized (this) {
+                try{this.wait();} catch (InterruptedException e){}
+            }
+        }
+    }
+
+    public void notifyPlayer(){
+        synchronized (key){
+            key.notifyAll();
+        }
+    }
+
+
 }

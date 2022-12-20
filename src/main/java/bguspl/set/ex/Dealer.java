@@ -63,10 +63,6 @@ public class Dealer implements Runnable {
         while (!shouldFinish()) {
             Collections.shuffle(deck);
             placeCardsOnTable();
-            synchronized (players){
-
-                players.notifyAll();
-            }
             timerLoop();
             updateTimerDisplay(false);
             removeAllCardsFromTable();
@@ -83,13 +79,9 @@ public class Dealer implements Runnable {
         while (!terminate && System.currentTimeMillis() <= reshuffleTime) {
             sleepUntilWokenOrTimeout();
             updateTimerDisplay(false);
-            while (!playersQueue.isEmpty()) {
-                Player currentPlayer = playersQueue.remove();
-
-                checkSet(currentPlayer);
-            }
             placeCardsOnTable();
         }
+
     }
     /**
      * Called when the game should be terminated.
@@ -127,15 +119,21 @@ public class Dealer implements Runnable {
                 for (Player p : players) {
                     if (p.getId() != player.getId()) {
                         if (p.potentialSetContains(card)) {
-                            p.removeFromPotentialSet(card);
                             table.removeToken(p.getId(), table.cardToSlot[card]);
+                            p.removeFromPotentialSet(card);
                         }
                     }
                     else {
-                        table.removeToken(player.getId(), table.cardToSlot[card]);
+                        if(table.cardToSlot[card] != null){
+                            table.removeToken(player.getId(), table.cardToSlot[card]);
+                        }
+
                     }
                 }
-                table.removeCard(table.cardToSlot[card]);
+                if(table.cardToSlot[card] != null){
+
+                    table.removeCard(table.cardToSlot[card]);
+                }
 
             }
             player.clearSet();
@@ -167,10 +165,23 @@ public class Dealer implements Runnable {
      */
     private void sleepUntilWokenOrTimeout() {
         // TODO implement
-        try {
-            Thread.currentThread().sleep(1000);
-        } catch (InterruptedException e) {
-        }
+
+
+            Player playerToCheck = null;
+            try {
+
+                playerToCheck = playersQueue.poll(1000, TimeUnit.MILLISECONDS);
+                if(playerToCheck != null){
+
+                    checkSet(playerToCheck);
+                    synchronized (playerToCheck){
+                        playerToCheck.notifyAll();
+                    }
+
+                }
+            }
+            catch (InterruptedException e) {}
+
     }
 
     /**
@@ -244,6 +255,7 @@ public class Dealer implements Runnable {
 
             if (isSet) {
                 //clear player's actions:
+                System.out.println("checked set of "+player.getId());
                 removeSet(player);
                 player.setFrozenState(1);
                 placeCardsOnTable();
@@ -259,17 +271,22 @@ public class Dealer implements Runnable {
 
 
 
-    public void checkPlayer(Player player) {
-        if (!playersQueue.contains(player)) {
-            playersQueue.add(player);
-        }
-    }
+//    public void checkPlayer(Player player) {
+//        if (!playersQueue.contains(player)) {
+//            synchronized (player) {
+//                playersQueue.add(player);
+//                try{player.wait();} catch (InterruptedException e){}
+//            }
+//        }
+//    }
 
     public List<Integer> getDeck() {
         return deck;
     }
 
-    public BlockingQueue<Player> getPlayersQueue() {
+    public synchronized BlockingQueue<Player> getPlayersQueue() {
         return playersQueue;
     }
+
+
 }
