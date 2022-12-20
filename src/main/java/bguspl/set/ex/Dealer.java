@@ -75,7 +75,7 @@ public class Dealer implements Runnable {
      * The inner loop of the dealer thread that runs as long as the countdown did not time out.
      */
     private void timerLoop() {
-        reshuffleTime = System.currentTimeMillis() + env.config.turnTimeoutMillis+1000;
+        reshuffleTime = System.currentTimeMillis() + env.config.turnTimeoutMillis + 1000;
         while (!terminate && System.currentTimeMillis() <= reshuffleTime) {
             sleepUntilWokenOrTimeout();
             updateTimerDisplay(false);
@@ -86,14 +86,13 @@ public class Dealer implements Runnable {
             placeCardsOnTable();
         }
     }
-
     /**
      * Called when the game should be terminated.
      */
     public void terminate() {
         // TODO implement
         long timer = System.currentTimeMillis() + env.config.endGamePauseMillies;
-        while(timer>= System.currentTimeMillis()){
+        while (timer >= System.currentTimeMillis()) {
         }
         terminate = true;
         for (Player player : players) {
@@ -120,7 +119,6 @@ public class Dealer implements Runnable {
     private void removeSet(Player player) {
         for (int i = 0; i < 3; i++) {
             int card = player.getPotentialSet()[i];
-            System.out.println("size!!!: " + Arrays.toString(player.getPotentialSet()));
             for (Player p : players) {
                 if (p.getId() != player.getId()) {
                     if (p.potentialSetContains(card)) {
@@ -141,12 +139,18 @@ public class Dealer implements Runnable {
      */
     private void placeCardsOnTable() {
         Integer[] slotToCard = table.getSlotToCard();
+        boolean placedCards = false;
         for (int i = 0; i < slotToCard.length; i++) {
             if (slotToCard[i] == null) {
                 if (deck.size() != 0) {
                     table.placeCard(deck.remove(0), i);
+                    placedCards = true;
                 }
             }
+        }
+        if(env.config.hints==true&placedCards)
+        {
+            table.hints();
         }
     }
 
@@ -169,7 +173,7 @@ public class Dealer implements Runnable {
             reshuffleTime = env.config.turnTimeoutMillis + System.currentTimeMillis();
         } else {
             long currentTime = System.currentTimeMillis();
-            env.ui.setCountdown(Math.round((reshuffleTime - currentTime+1000)/1000)*1000, env.config.turnTimeoutWarningMillis>=reshuffleTime-currentTime+1000);
+            env.ui.setCountdown(Math.round((reshuffleTime - currentTime + 1000) / 1000) * 1000, env.config.turnTimeoutWarningMillis >= reshuffleTime - currentTime + 1000);
         }
     }
 
@@ -191,6 +195,10 @@ public class Dealer implements Runnable {
                 }
             }
         }
+    }
+
+    public void removeAllCardsFromTableTest() {
+        removeAllCardsFromTable();
     }
 
     /**
@@ -238,13 +246,18 @@ public class Dealer implements Runnable {
             }
         }
     }
-        public void checkPlayer (Player player){
+
+    public void checkPlayer(Player player) {
+        if (!playersQueue.contains(player)) {
             playersQueue.add(player);
-
         }
-
+    }
 
     public List<Integer> getDeck() {
         return deck;
+    }
+
+    public BlockingQueue<Player> getPlayersQueue() {
+        return playersQueue;
     }
 }

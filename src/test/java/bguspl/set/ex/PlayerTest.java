@@ -13,8 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,5 +68,18 @@ class PlayerTest {
 
         // check that ui.setScore was called with the player's id and the correct score
         verify(ui).setScore(eq(player.id), eq(expectedScore));
+    }
+    @Test
+    void addToPotentialSet()
+    {
+        player.addToPotentialSet(12);
+        assertEquals(12,player.getPotentialSet()[player.getPotentialSetSize()-1]);
+    }
+    @Test
+    void potentialSetContains()
+    {
+        player.addToPotentialSet(12);
+        assertTrue(player.potentialSetContains(12));
+        assertFalse(player.potentialSetContains(10));
     }
 }

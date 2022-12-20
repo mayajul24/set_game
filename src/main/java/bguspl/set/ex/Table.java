@@ -81,40 +81,45 @@ public class Table {
 
     /**
      * Places a card on the table in a grid slot.
+     *
      * @param card - the card id to place in the slot.
      * @param slot - the slot in which the card should be placed.
-     *
      * @post - the card placed is on the table, in the assigned slot.
      */
     public synchronized void placeCard(int card, int slot) {
         try {
             Thread.sleep(env.config.tableDelayMillis);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
 
         cardToSlot[card] = slot;
         slotToCard[slot] = card;
 
-        env.ui.placeCard(card,slot);
+        env.ui.placeCard(card, slot);
     }
 
     /**
      * Removes a card from a grid slot on the table.
+     *
      * @param slot - the slot from which to remove the card.
      */
     public synchronized void removeCard(int slot) {
         try {
             Thread.sleep(env.config.tableDelayMillis);
-        } catch (InterruptedException ignored) {}
+        } catch (InterruptedException ignored) {
+        }
+        if (slotToCard[slot] != null) {
+            int card = slotToCard[slot];
+            slotToCard[slot] = null;
+            cardToSlot[card] = null;
+            env.ui.removeCard(slot);
 
-        int card = slotToCard[slot];
-        slotToCard[slot] = null;
-        cardToSlot[card] = null;
-        env.ui.removeCard(slot);
-
+        }
     }
 
     /**
      * Places a player token on a grid slot.
+     *
      * @param player - the player the token belongs to.
      * @param slot   - the slot on which to place the token.
      */
@@ -124,17 +129,22 @@ public class Table {
 
     /**
      * Removes a token of a player from a grid slot.
+     *
      * @param player - the player the token belongs to.
      * @param slot   - the slot from which to remove the token.
-     * @return       - true iff a token was successfully removed.
+     * @return - true iff a token was successfully removed.
      */
     public synchronized boolean removeToken(int player, int slot) {
         // TODO implement
-        env.ui.removeToken(player,slot);
+        env.ui.removeToken(player, slot);
         return true;
     }
-    public  synchronized Integer[] getSlotToCard()
-    {
+
+    public synchronized Integer[] getSlotToCard() {
         return slotToCard;
+    }
+
+    public Integer[] getCardToSlot() {
+        return cardToSlot;
     }
 }

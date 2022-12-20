@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TableTest {
 
@@ -93,6 +93,21 @@ class TableTest {
     void placeCard_AllSlotsAreFilled() throws InterruptedException {
         fillAllSlots();
         placeSomeCardsAndAssert();
+    }
+
+    @Test
+    void checkRemoveCard(){
+        table.placeCard(12,0);
+        table.removeCard(0);
+        assertNull(table.getSlotToCard()[0]);
+        assertNull(table.getCardToSlot()[12]);
+    }
+    @Test
+    //tries to remove a card that isn't placed on table
+    void checkRemoveCardFailure(){
+        table.removeCard(0);
+        assertTrue(true);
+        assertNull(table.getSlotToCard()[0]);
     }
 
     static class MockUserInterface implements UserInterface {

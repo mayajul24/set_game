@@ -111,13 +111,10 @@ public class Player implements Runnable {
             }
 
             if (keyPressesTokens.size() > 0) {
-                System.out.println("in the first if");
                 int token = keyPressesTokens.remove();
                 if (table.slotToCard[token] != null) {
-                    System.out.println("in the second if");
                     int card = table.getSlotToCard()[token];
                     if (potentialSetContains(card)) {
-                        System.out.println("in the contains");
                         removeFromPotentialSet(card);
                         table.removeToken(id, token);
                     } else if (potentialSetSize < 3) {
@@ -148,6 +145,9 @@ public class Player implements Runnable {
             env.logger.info("Thread " + Thread.currentThread().getName() + " starting.");
             while (!terminate) {
                 // TODO implement player key press simulator
+//                try {
+//                    synchronized (this) { Thread.currentThread().sleep(10); }
+//                } catch (InterruptedException ignored) {}
                 Random random = new Random();
                 int slot = random.nextInt(12);
                 keyPressed(slot);
@@ -177,7 +177,6 @@ public class Player implements Runnable {
             if (frozenState == 0) {
                 if (table.slotToCard[slot] != null && keyPressesTokens.size() < 3) {
                     keyPressesTokens.add(slot);
-                    System.out.println("pressed");
                 }
             }
         }
@@ -242,17 +241,11 @@ public class Player implements Runnable {
     }
 
     public synchronized void addToPotentialSet(int card){
-    //    System.out.println("set before add: "+ Arrays.toString(getPotentialSet()));
-    //    System.out.println("size before remove: "+potentialSetSize);
         getPotentialSet()[potentialSetSize] = card;
         potentialSetSize++;
-    //    System.out.println("set after add: "+ Arrays.toString(getPotentialSet()));
-    //    System.out.println("size after remove: "+potentialSetSize);
     }
 
     public synchronized void removeFromPotentialSet(int card){
-     //   System.out.println("set before remove: "+ Arrays.toString(getPotentialSet()));
-     //   System.out.println("size before remove: "+potentialSetSize);
         boolean found = false;
         for(int i =0 ; i<3 & !found ; i++){
             if (getPotentialSet()[i] == card){
@@ -265,8 +258,6 @@ public class Player implements Runnable {
                 potentialSetSize--;
             }
         }
-     //   System.out.println("set after remove: "+ Arrays.toString(getPotentialSet()));
-     //   System.out.println("size after remove: "+potentialSetSize);
     }
 
     public synchronized boolean potentialSetContains(int card){
