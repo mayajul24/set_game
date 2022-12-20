@@ -92,6 +92,9 @@ public class Dealer implements Runnable {
      */
     public void terminate() {
         // TODO implement
+        long timer = System.currentTimeMillis() + env.config.endGamePauseMillies;
+        while(timer>= System.currentTimeMillis()){
+        }
         terminate = true;
         for (Player player : players) {
             player.terminate();
