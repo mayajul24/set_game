@@ -46,21 +46,20 @@ class DealerTest {
     }
 
     @Test
-    void checkPlayer() {
+    void checkRemoveSet() {
         Env env = new Env(logger, new Config(logger, (String) null), ui, util);
         Player player = new Player(env,dealer,table,0,true);
-        dealer.checkPlayer(player);
-        assertEquals(true,dealer.getPlayersQueue().contains(player));
+       dealer.removeSet(player);
+        assertEquals(true,player.getPotentialSetSize()==0);
     }
 
     @Test
     //tries to add the same player to the queue twice
-    void checkPlayer2() {
+    void checkRemoveSet2() {
         Env env = new Env(logger, new Config(logger, (String) null), ui, util);
         Player player = new Player(env,dealer,table,0,true);
-        dealer.checkPlayer(player);
-        dealer.checkPlayer(player);
-        dealer.getPlayersQueue().remove(player);
-        assertFalse(dealer.getPlayersQueue().contains(player));
+        int card = player.getPotentialSet()[0];
+        assertNull(table.cardToSlot[card]);
+
     }
 }

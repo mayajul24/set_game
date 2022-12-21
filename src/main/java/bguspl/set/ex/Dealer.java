@@ -117,7 +117,7 @@ public class Dealer implements Runnable {
         // TODO implement
     }
 
-    private void removeSet(Player player) {
+    protected void removeSet(Player player) {
         System.out.println(player.id + " player set: " + Arrays.toString(player.getPotentialSet()));
         System.out.println(" set: " + Arrays.toString(table.getSlotToCard()));
 
