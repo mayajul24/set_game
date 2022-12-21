@@ -86,7 +86,6 @@ public class Dealer implements Runnable {
                 player.notifyAll();
             }
         }
-
     }
     /**
      * Called when the game should be terminated.
@@ -119,15 +118,22 @@ public class Dealer implements Runnable {
     }
 
     private void removeSet(Player player) {
-            for (int i = 0; i < 3; i++) {
+        System.out.println(player.id + " player set: " + Arrays.toString(player.getPotentialSet()));
+        System.out.println(" set: " + Arrays.toString(table.getSlotToCard()));
+
+        for (int i = 0; i < 3; i++) {
                 int card = player.getPotentialSet()[i];
                 int slot = table.getCardToSlot()[card];
                 for (Player p : players) {
                     if (p.getId() != player.getId()) {
+                        System.out.println("player " + p.id +" contains card " + card+ " :" +p.potentialSetContains(card));
+                        System.out.println(Arrays.toString(p.getPotentialSet()));
                         if (p.potentialSetContains(card)) {
-                            table.removeToken(p.getId(), slot);
-                            p.removeFromPotentialSet(card);
 
+                            table.removeToken(p.getId(), slot);
+                            System.out.println("before " + card +" was removed from " +p.id+": "+ Arrays.toString(p.getPotentialSet()));
+                            p.removeFromPotentialSet(card);
+                            System.out.println("after " + card +" was removed from " +p.id+": "+ Arrays.toString(p.getPotentialSet()));
                         }
                     }
                     else {
@@ -157,10 +163,10 @@ public class Dealer implements Runnable {
                 }
             }
         }
-        if(env.config.hints==true&placedCards)
-        {
-            table.hints();
-        }
+//        if(env.config.hints==true&placedCards)
+//        {
+//            table.hints();
+//        }
     }
 
     /**
@@ -177,9 +183,9 @@ public class Dealer implements Runnable {
                 if(playerToCheck != null){
 
                     checkSet(playerToCheck);
-                    synchronized (playerToCheck){
-                        playerToCheck.notifyAll();
-                    }
+                        synchronized (playerToCheck){
+                            playerToCheck.notifyAll();
+                        }
 
                 }
 

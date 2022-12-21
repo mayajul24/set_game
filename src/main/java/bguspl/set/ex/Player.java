@@ -118,7 +118,7 @@ public class Player implements Runnable {
                         addToPotentialSet(card);
                         table.placeToken(id, token);
                         if (potentialSetSize == 3) {
-                            System.out.println("dealer is going to check me: "+id);
+                            //System.out.println("dealer is going to check me: "+id);
                             checkPlayer();
                             }
                         }
@@ -294,8 +294,8 @@ public class Player implements Runnable {
     }
 
     public void notifyPlayer(){
-        synchronized (key){
-            key.notifyAll();
+        synchronized (this){
+            this.notifyAll();
         }
     }
 
