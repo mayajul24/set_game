@@ -81,6 +81,11 @@ public class Dealer implements Runnable {
             updateTimerDisplay(false);
             placeCardsOnTable();
         }
+        for(Player player: players){
+            synchronized (player){
+                player.notifyAll();
+            }
+        }
 
     }
     /**
@@ -116,24 +121,22 @@ public class Dealer implements Runnable {
     private void removeSet(Player player) {
             for (int i = 0; i < 3; i++) {
                 int card = player.getPotentialSet()[i];
+                int slot = table.getCardToSlot()[card];
                 for (Player p : players) {
                     if (p.getId() != player.getId()) {
                         if (p.potentialSetContains(card)) {
-                            table.removeToken(p.getId(), table.cardToSlot[card]);
+                            table.removeToken(p.getId(), slot);
                             p.removeFromPotentialSet(card);
+
                         }
                     }
                     else {
-                        if(table.cardToSlot[card] != null){
-                            table.removeToken(player.getId(), table.cardToSlot[card]);
-                        }
-
+                            table.removeToken(player.getId(), slot);
                     }
                 }
-                if(table.cardToSlot[card] != null){
 
-                    table.removeCard(table.cardToSlot[card]);
-                }
+                    table.removeCard(slot);
+
 
             }
             player.clearSet();
@@ -179,8 +182,12 @@ public class Dealer implements Runnable {
                     }
 
                 }
+
             }
+
             catch (InterruptedException e) {}
+
+
 
     }
 
@@ -263,10 +270,11 @@ public class Dealer implements Runnable {
             } else {
                 player.setFrozenState(3);
             }
-            synchronized (player){
-                player.notifyAll();
+
             }
-            }
+        synchronized (player){
+            player.notifyAll();
+        }
         }
 
 
