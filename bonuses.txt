@@ -1,0 +1,44 @@
+A) "+2 points will be awarded for fully supporting all configuration fields and avoiding the
+use of magic numbers."
+1. This task was implemented like so: for each configuration field, we used it as a parameter for its destenation. 
+2. 
+
+turnTimeoutMillis: 
+class: Dealer
+mathods:timerloop
+class: dealer
+mathods:updateTimerDisplay
+
+turnTimeoutWarningMillis
+class: Dealer
+mathods: updateTimerDisplay
+
+penaltyFreezeMillis
+class: Player
+mathods: panelty
+
+
+pointMillis
+class: Player
+mathods: point
+
+3. To test if it was working correctly, we refactored those values in "config.properties" and checked if the values in the game changed accordingly.
+
+B) "+2 points will be awarded for terminating all threads (that you created) gracefully and
+in reverse order to the order they were created in"
+
+1. When terminating the progrm, the player threads are terminated in the reversed order they were created in, and finally the Delaer thread was terminated.
+2.
+class: Dealer
+mathods: teminate
+
+D)
+1. By syncronizing the critical parts in the code, we made the threads wait,in to prevent collitions. In addition, we Queued the Objects the threads needed to work on.
+Thus, when there was no object to work on, the threads were idle.
+
+2. in the Dealer class, we implemented the notification for the players to go back to work, along with a blocking queue for the players that handed a set 
+check.
+In the Player's class, the player waits after handing the set to be checked(checkPlayer method). In addition, we maintained a queue for the key presses, so 
+the player works only when there are keypresses to check.
+
+3. We ren our program in different scenarios (a different amount of time, number of humen/non humen players and more) 
